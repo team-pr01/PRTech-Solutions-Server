@@ -25,10 +25,11 @@ export type TProject = {
     isPrimary?: boolean;
   }[];
   notes?: string;
-  
+  projectLinks?: string[];
+
   // Client reference
   clientId: string;
-  
+
   createdAt?: Date;
   updatedAt?: Date;
 };

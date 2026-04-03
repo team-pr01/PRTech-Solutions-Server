@@ -57,6 +57,7 @@ const ProjectSchema = new Schema<TProject>(
     timelineLink: { type: String, trim: true },
     contactPerson: [ContactPersonSchema],
     notes: { type: String, trim: true },
+    projectLinks: [{ type: String, trim: true }],
     clientId: { type: String, required: true, ref: "Client" },
   },
   {

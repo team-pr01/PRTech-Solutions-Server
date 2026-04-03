@@ -48,6 +48,7 @@ const ProjectSchema = new mongoose_1.Schema({
     timelineLink: { type: String, trim: true },
     contactPerson: [ContactPersonSchema],
     notes: { type: String, trim: true },
+    projectLinks: [{ type: String, trim: true }],
     clientId: { type: String, required: true, ref: "Client" },
 }, {
     timestamps: true,
