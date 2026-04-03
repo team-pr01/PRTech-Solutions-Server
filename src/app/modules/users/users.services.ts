@@ -1,0 +1,56 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { User } from '../auth/auth.model';
+import { TUser } from '../auth/auth.interface';
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
+
+const getAllUser = async () => {
+  const result = await User.find();
+  return result;
+};
+
+const getMe = async (userId: string) => {
+  const result = await User.findById(userId);
+  return result;
+};
+
+
+const updateProfile = async (id: string, payload: Partial<TUser>, profilePic: any) => {
+  let profilePicUrl: string | undefined;
+
+  if (profilePic) {
+    const imageName = `${id}-profile-${Date.now()}`;
+    const path = profilePic.path;
+
+    const { secure_url } = await sendImageToCloudinary(imageName, path);
+    profilePicUrl = secure_url;
+  }
+
+  if (profilePicUrl) {
+    payload.avatar = profilePicUrl;
+  }
+
+  const result = await User.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  return result;
+};
+
+const deleteUser = async (id: string) => {
+  const result = await User.findByIdAndDelete(id);
+  return result;
+};
+
+const getSingleUserById = async (userId:string) => {
+  const result = await User.findById(userId);
+  return result;
+};
+
+export const UserServices = {
+  getAllUser,
+  getMe,
+  deleteUser,
+  getSingleUserById,
+  updateProfile,
+};

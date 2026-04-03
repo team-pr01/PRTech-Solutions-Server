@@ -1,0 +1,30 @@
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+import config from "../config";
+
+dotenv.config();
+
+export const sendEmail = async (to: string, subject: string, html: string) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: config.smtp_email,
+        pass: config.smtp_pass,
+      },
+    });
+
+    await transporter.sendMail({
+      from: config.smtp_email,
+      to,
+      subject,
+      text: "Reset your password within 10 minutes",
+      html,
+    });
+  } catch (error) {
+    console.error("Failed to send email:", error);
+    throw new Error("Failed to send email");
+  }
+};
