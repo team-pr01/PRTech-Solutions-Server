@@ -17,7 +17,7 @@ const addProject = catchAsync(async (req, res) => {
 
 // Get All Projects
 const getAllProjects = catchAsync(async (req, res) => {
-  const { keyword, status, projectType, clientId, startDateFrom, startDateTo, endDateFrom, endDateTo, skip, limit } = req.query;
+  const { keyword, status, projectType, clientId, startDate, endDate, skip, limit } = req.query;
 
   const result = await ProjectServices.getAllProjects(
     {
@@ -25,10 +25,8 @@ const getAllProjects = catchAsync(async (req, res) => {
       status: status as string,
       projectType: projectType as string,
       clientId: clientId as string,
-      startDateFrom: startDateFrom as string,
-      startDateTo: startDateTo as string,
-      endDateFrom: endDateFrom as string,
-      endDateTo: endDateTo as string,
+      startDate: startDate as string,
+      endDate: endDate as string,
     },
     skip ? parseInt(skip as string) : 0,
     limit ? parseInt(limit as string) : 10

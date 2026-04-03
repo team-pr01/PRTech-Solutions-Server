@@ -62,6 +62,7 @@ const getAllProjects = (...args_1) => __awaiter(void 0, [...args_1], void 0, fun
             { name: { $regex: filters.keyword, $options: "i" } },
             { description: { $regex: filters.keyword, $options: "i" } },
             { phases: { $regex: filters.keyword, $options: "i" } },
+            { clientId: { $regex: filters.keyword, $options: "i" } },
         ];
     }
     // STATUS FILTER
@@ -78,27 +79,7 @@ const getAllProjects = (...args_1) => __awaiter(void 0, [...args_1], void 0, fun
             $options: "i",
         };
     }
-    // CLIENT ID FILTER
-    if (filters.clientId) {
-        query.clientId = filters.clientId;
-    }
-    // DATE RANGE FILTERS
-    if (filters.startDateFrom || filters.startDateTo) {
-        query.startDate = {};
-        if (filters.startDateFrom)
-            query.startDate.$gte = new Date(filters.startDateFrom);
-        if (filters.startDateTo)
-            query.startDate.$lte = new Date(filters.startDateTo);
-    }
-    if (filters.endDateFrom || filters.endDateTo) {
-        query.endDate = {};
-        if (filters.endDateFrom)
-            query.endDate.$gte = new Date(filters.endDateFrom);
-        if (filters.endDateTo)
-            query.endDate.$lte = new Date(filters.endDateTo);
-    }
-    return (0, infinitePaginate_1.infinitePaginate)(project_model_1.default, query, skip, limit, ["clientId"] // populate client details
-    );
+    return (0, infinitePaginate_1.infinitePaginate)(project_model_1.default, query, skip, limit, ["clientId"]);
 });
 // Get single project by id
 const getSingleProject = (projectId) => __awaiter(void 0, void 0, void 0, function* () {

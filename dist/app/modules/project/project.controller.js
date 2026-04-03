@@ -29,16 +29,14 @@ const addProject = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
 }));
 // Get All Projects
 const getAllProjects = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { keyword, status, projectType, clientId, startDateFrom, startDateTo, endDateFrom, endDateTo, skip, limit } = req.query;
+    const { keyword, status, projectType, clientId, startDate, endDate, skip, limit } = req.query;
     const result = yield project_services_1.ProjectServices.getAllProjects({
         keyword: keyword,
         status: status,
         projectType: projectType,
         clientId: clientId,
-        startDateFrom: startDateFrom,
-        startDateTo: startDateTo,
-        endDateFrom: endDateFrom,
-        endDateTo: endDateTo,
+        startDate: startDate,
+        endDate: endDate,
     }, skip ? parseInt(skip) : 0, limit ? parseInt(limit) : 10);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,

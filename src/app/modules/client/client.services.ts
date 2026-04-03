@@ -89,14 +89,6 @@ const getAllClients = async (
     };
   }
 
-  // CLIENT TYPE FILTER
-  if (filters.clientType) {
-    query.clientType = {
-      $regex: `^${filters.clientType.trim()}$`,
-      $options: "i",
-    };
-  }
-
   // COUNTRY FILTER
   if (filters.country) {
     query.country = {

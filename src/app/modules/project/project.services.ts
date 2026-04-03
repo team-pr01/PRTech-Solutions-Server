@@ -59,6 +59,8 @@ const getAllProjects = async (
       { name: { $regex: filters.keyword, $options: "i" } },
       { description: { $regex: filters.keyword, $options: "i" } },
       { phases: { $regex: filters.keyword, $options: "i" } },
+      { clientId: { $regex: filters.keyword, $options: "i" } },
+
     ];
   }
 
@@ -78,30 +80,12 @@ const getAllProjects = async (
     };
   }
 
-  // CLIENT ID FILTER
-  if (filters.clientId) {
-    query.clientId = filters.clientId;
-  }
-
-  // DATE RANGE FILTERS
-  if (filters.startDateFrom || filters.startDateTo) {
-    query.startDate = {};
-    if (filters.startDateFrom) query.startDate.$gte = new Date(filters.startDateFrom);
-    if (filters.startDateTo) query.startDate.$lte = new Date(filters.startDateTo);
-  }
-
-  if (filters.endDateFrom || filters.endDateTo) {
-    query.endDate = {};
-    if (filters.endDateFrom) query.endDate.$gte = new Date(filters.endDateFrom);
-    if (filters.endDateTo) query.endDate.$lte = new Date(filters.endDateTo);
-  }
-
   return infinitePaginate(
     Project,
     query,
     skip,
     limit,
-    ["clientId"] // populate client details
+    ["clientId"]
   );
 };
 
@@ -134,7 +118,7 @@ const updateProject = async (projectId: string, payload: Partial<TProject>) => {
   if (payload.price !== undefined || payload.installments !== undefined) {
     const newPrice = payload.price !== undefined ? payload.price : existingProject.price;
     const newInstallments = payload.installments !== undefined ? payload.installments : existingProject.installments;
-    
+
     if (newPrice && newInstallments) {
       const totalPaid = newInstallments.reduce((sum, installment) => sum + installment.amount, 0);
       payload.dueAmount = newPrice - totalPaid;

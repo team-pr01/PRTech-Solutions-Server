@@ -87,13 +87,6 @@ const getAllClients = (...args_1) => __awaiter(void 0, [...args_1], void 0, func
             $options: "i",
         };
     }
-    // CLIENT TYPE FILTER
-    if (filters.clientType) {
-        query.clientType = {
-            $regex: `^${filters.clientType.trim()}$`,
-            $options: "i",
-        };
-    }
     // COUNTRY FILTER
     if (filters.country) {
         query.country = {
