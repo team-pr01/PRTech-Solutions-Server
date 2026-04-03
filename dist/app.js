@@ -18,7 +18,7 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 // app.use(express.static("./uploads"));
 // Middleware for handling CORS with credentials
-app.use((0, cors_1.default)({ origin: ['http://localhost:5173'], credentials: true }));
+app.use((0, cors_1.default)({ origin: ['http://localhost:5173', 'https://prtech-solutions-admin.vercel.app'], credentials: true }));
 // Root route
 app.get('/', (req, res) => {
     res.send("Welcome onboard!");
