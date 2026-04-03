@@ -5,6 +5,7 @@ const auth_route_1 = require("../modules/auth/auth.route");
 const users_route_1 = require("../modules/users/users.route");
 const client_route_1 = require("../modules/client/client.route");
 const admin_route_1 = require("../modules/admin/admin.route");
+const project_routes_1 = require("../modules/project/project.routes");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -22,6 +23,10 @@ const moduleRoutes = [
     {
         path: "/client",
         route: client_route_1.ClientRoutes,
+    },
+    {
+        path: "/project",
+        route: project_routes_1.ProjectRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
