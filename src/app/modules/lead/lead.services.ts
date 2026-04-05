@@ -18,12 +18,6 @@ const addLead = async (payload: TLead) => {
   const {
     businessName,
     businessContactNumber,
-    country,
-    ownerName,
-    ownerContactNumber,
-    priority,
-    category,
-    status,
   } = payload;
 
   // Check if lead with same business name and contact number exists
@@ -37,27 +31,7 @@ const addLead = async (payload: TLead) => {
   }
 
   const payloadData = {
-    businessName,
-    businessContactNumber,
-    country,
-    city: payload.city,
-    address: payload.address,
-    ownerName,
-    ownerContactNumber,
-    ownerEmail: payload.ownerEmail,
-    isWhatsapp: payload.isWhatsapp || false,
-    socialMedia: payload.socialMedia || [],
-    website: payload.website,
-    issueFound: payload.issueFound,
-    priority: priority || null,
-    category,
-    discoveryCallScheduledDate: payload.discoveryCallScheduledDate,
-    discoveryCallNotes: payload.discoveryCallNotes,
-    followUps: payload.followUps || [],
-    status: status || "Pending",
-    nextAction: payload.nextAction,
-    leadSource: payload.leadSource,
-    notes: payload.notes,
+    ...payload
   };
 
   const result = await Lead.create(payloadData);
@@ -108,11 +82,6 @@ const getAllLeads = async (
     query.priority = { $regex: `^${filters.priority.trim()}$`, $options: "i" };
   }
 
-  // LEAD SOURCE FILTER
-  if (filters.leadSource) {
-    query.leadSource = { $regex: `^${filters.leadSource.trim()}$`, $options: "i" };
-  }
-
   // DISCOVERY CALL SCHEDULED DATE RANGE
   if (filters.discoveryCallFrom || filters.discoveryCallTo) {
     query.discoveryCallScheduledDate = {};
@@ -125,7 +94,7 @@ const getAllLeads = async (
   }
 
   // FOLLOW UP DATE RANGE
-  if (filters.followUpFrom || filters.followUpTo) {
+  if (filters.followUpDate) {
     query["followUps.followUpDate"] = {};
     if (filters.followUpFrom) {
       query["followUps.followUpDate"].$gte = new Date(filters.followUpFrom);
@@ -133,11 +102,6 @@ const getAllLeads = async (
     if (filters.followUpTo) {
       query["followUps.followUpDate"].$lte = new Date(filters.followUpTo);
     }
-  }
-
-  // PRIORITY FILTER
-  if (filters.priority) {
-    query.priority = filters.priority;
   }
 
   return infinitePaginate(

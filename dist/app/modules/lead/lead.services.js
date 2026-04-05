@@ -27,7 +27,7 @@ const generateFollowUpKey = (followUpCount) => {
 };
 // Add Lead
 const addLead = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { businessName, businessContactNumber, country, ownerName, ownerContactNumber, priority, category, status, } = payload;
+    const { businessName, businessContactNumber, } = payload;
     // Check if lead with same business name and contact number exists
     const existingLead = yield lead_model_1.default.findOne({
         businessName,
@@ -36,29 +36,7 @@ const addLead = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (existingLead) {
         throw new AppError_1.default(http_status_1.default.CONFLICT, "Lead with this business name and contact number already exists");
     }
-    const payloadData = {
-        businessName,
-        businessContactNumber,
-        country,
-        city: payload.city,
-        address: payload.address,
-        ownerName,
-        ownerContactNumber,
-        ownerEmail: payload.ownerEmail,
-        isWhatsapp: payload.isWhatsapp || false,
-        socialMedia: payload.socialMedia || [],
-        website: payload.website,
-        issueFound: payload.issueFound,
-        priority: priority || null,
-        category,
-        discoveryCallScheduledDate: payload.discoveryCallScheduledDate,
-        discoveryCallNotes: payload.discoveryCallNotes,
-        followUps: payload.followUps || [],
-        status: status || "Pending",
-        nextAction: payload.nextAction,
-        leadSource: payload.leadSource,
-        notes: payload.notes,
-    };
+    const payloadData = Object.assign({}, payload);
     const result = yield lead_model_1.default.create(payloadData);
     return result;
 });
@@ -95,10 +73,6 @@ const getAllLeads = (...args_1) => __awaiter(void 0, [...args_1], void 0, functi
     if (filters.priority) {
         query.priority = { $regex: `^${filters.priority.trim()}$`, $options: "i" };
     }
-    // LEAD SOURCE FILTER
-    if (filters.leadSource) {
-        query.leadSource = { $regex: `^${filters.leadSource.trim()}$`, $options: "i" };
-    }
     // DISCOVERY CALL SCHEDULED DATE RANGE
     if (filters.discoveryCallFrom || filters.discoveryCallTo) {
         query.discoveryCallScheduledDate = {};
@@ -110,7 +84,7 @@ const getAllLeads = (...args_1) => __awaiter(void 0, [...args_1], void 0, functi
         }
     }
     // FOLLOW UP DATE RANGE
-    if (filters.followUpFrom || filters.followUpTo) {
+    if (filters.followUpDate) {
         query["followUps.followUpDate"] = {};
         if (filters.followUpFrom) {
             query["followUps.followUpDate"].$gte = new Date(filters.followUpFrom);
@@ -118,10 +92,6 @@ const getAllLeads = (...args_1) => __awaiter(void 0, [...args_1], void 0, functi
         if (filters.followUpTo) {
             query["followUps.followUpDate"].$lte = new Date(filters.followUpTo);
         }
-    }
-    // PRIORITY FILTER
-    if (filters.priority) {
-        query.priority = filters.priority;
     }
     return (0, infinitePaginate_1.infinitePaginate)(lead_model_1.default, query, skip, limit, []);
 });

@@ -104,6 +104,10 @@ const LeadSchema = new Schema<TLead>(
       type: Date, 
       index: true 
     },
+    discoveryCallScheduledTime: { 
+      type: String, 
+      trim: true 
+    },
     discoveryCallNotes: { 
       type: String, 
       trim: true 

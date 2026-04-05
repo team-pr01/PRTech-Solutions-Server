@@ -37,6 +37,7 @@ export type TLead = {
 
   // Discovery Call
   discoveryCallScheduledDate?: Date;
+  discoveryCallScheduledTime?: string;
   discoveryCallNotes?: string;
 
   // Follow Ups

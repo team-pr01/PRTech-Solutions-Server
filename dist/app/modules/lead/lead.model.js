@@ -91,6 +91,10 @@ const LeadSchema = new mongoose_1.Schema({
         type: Date,
         index: true
     },
+    discoveryCallScheduledTime: {
+        type: String,
+        trim: true
+    },
     discoveryCallNotes: {
         type: String,
         trim: true
