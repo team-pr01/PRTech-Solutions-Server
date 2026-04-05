@@ -16,6 +16,9 @@ router.get("/statistics", (0, auth_1.default)(auth_constants_1.UserRole.admin, a
 router.get("/:leadId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), lead_controller_1.LeadControllers.getSingleLead);
 router.put("/update/:leadId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), lead_controller_1.LeadControllers.updateLead);
 router.delete("/delete/:leadId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), lead_controller_1.LeadControllers.deleteLead);
+// Schedule Discovery Call
+router.put("/schedule-discovery-call/:leadId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), lead_controller_1.LeadControllers.scheduleDiscoveryCall);
 // Follow Up Routes
 router.post("/:leadId/follow-ups/add", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), lead_controller_1.LeadControllers.addFollowUp);
+router.delete("/:leadId/follow-ups/delete/:followUpId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), lead_controller_1.LeadControllers.deleteFollowUp);
 exports.LeadRoutes = router;

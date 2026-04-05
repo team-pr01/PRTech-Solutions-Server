@@ -7,6 +7,7 @@ const client_route_1 = require("../modules/client/client.route");
 const admin_route_1 = require("../modules/admin/admin.route");
 const project_routes_1 = require("../modules/project/project.routes");
 const lead_routes_1 = require("../modules/lead/lead.routes");
+const categories_route_1 = require("../modules/categories/categories.route");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -32,6 +33,10 @@ const moduleRoutes = [
     {
         path: "/lead",
         route: lead_routes_1.LeadRoutes,
+    },
+    {
+        path: "/category",
+        route: categories_route_1.CategoryRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

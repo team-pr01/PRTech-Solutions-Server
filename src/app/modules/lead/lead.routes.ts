@@ -42,11 +42,25 @@ router.delete(
   LeadControllers.deleteLead
 );
 
+// Schedule Discovery Call
+router.put(
+  "/schedule-discovery-call/:leadId",
+  auth(UserRole.admin, UserRole.staff),
+  LeadControllers.scheduleDiscoveryCall
+);
+
 // Follow Up Routes
 router.post(
   "/:leadId/follow-ups/add",
   auth(UserRole.admin, UserRole.staff),
   LeadControllers.addFollowUp
 );
+
+router.delete(
+  "/:leadId/follow-ups/delete/:followUpId",
+  auth(UserRole.admin, UserRole.staff),
+  LeadControllers.deleteFollowUp
+);
+
 
 export const LeadRoutes = router;

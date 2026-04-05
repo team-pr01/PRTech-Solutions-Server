@@ -77,12 +77,25 @@ const getAllLeads = async (
     query.category = { $regex: `^${filters.category.trim()}$`, $options: "i" };
   }
 
-  // PRIORITY FILTER
+  // PRIORITY FILTER (Fix for number priority)
   if (filters.priority) {
-    query.priority = { $regex: `^${filters.priority.trim()}$`, $options: "i" };
+    query.priority = parseInt(filters.priority); // Convert to number, not regex
   }
 
-  // DISCOVERY CALL SCHEDULED DATE RANGE
+  // DISCOVERY CALL SCHEDULED DATE - SINGLE DATE (FIXED)
+  if (filters.discoveryCallScheduledDate) {
+    const date = new Date(filters.discoveryCallScheduledDate);
+    // Match the entire day (from start to end)
+    const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+
+    query.discoveryCallScheduledDate = {
+      $gte: startOfDay,
+      $lte: endOfDay,
+    };
+  }
+
+  // DISCOVERY CALL DATE RANGE (if you want to keep both options)
   if (filters.discoveryCallFrom || filters.discoveryCallTo) {
     query.discoveryCallScheduledDate = {};
     if (filters.discoveryCallFrom) {
@@ -93,8 +106,20 @@ const getAllLeads = async (
     }
   }
 
-  // FOLLOW UP DATE RANGE
+  // FOLLOW UP DATE FILTER (SINGLE DATE)
   if (filters.followUpDate) {
+    const date = new Date(filters.followUpDate);
+    const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+
+    query["followUps.followUpDate"] = {
+      $gte: startOfDay,
+      $lte: endOfDay,
+    };
+  }
+
+  // FOLLOW UP DATE RANGE (optional)
+  if (filters.followUpFrom || filters.followUpTo) {
     query["followUps.followUpDate"] = {};
     if (filters.followUpFrom) {
       query["followUps.followUpDate"].$gte = new Date(filters.followUpFrom);
@@ -165,6 +190,38 @@ const addFollowUp = async (leadId: string, payload: { followUpDate: Date; respon
 
   await lead.save();
   return lead;
+};
+
+// Delete Follow Up
+const deleteFollowUp = async (leadId: string, followUpId: string) => {
+  const lead = await Lead.findById(leadId);
+  if (!lead) {
+    throw new AppError(httpStatus.NOT_FOUND, "Lead not found");
+  }
+
+  const followUpExists = lead.followUps?.some(
+    (followUp: any) => followUp._id?.toString() === followUpId
+  );
+
+  if (!followUpExists) {
+    throw new AppError(httpStatus.NOT_FOUND, "Follow up not found");
+  }
+
+  // Find the follow up to get its key for response message
+  const followUpToDelete = lead.followUps.find(
+    (followUp: any) => followUp._id?.toString() === followUpId
+  );
+
+  lead.followUps = lead.followUps?.filter(
+    (followUp: any) => followUp._id?.toString() !== followUpId
+  );
+
+  await lead.save();
+
+  return {
+    lead,
+    deletedFollowUpKey: followUpToDelete?.key,
+  };
 };
 
 // Delete lead (Soft delete)
@@ -249,12 +306,55 @@ const getLeadStatistics = async () => {
   };
 };
 
+// Schedule Discovery Call
+const scheduleDiscoveryCall = async (
+  leadId: string,
+  payload: {
+    discoveryCallScheduledDate: Date;
+    discoveryCallScheduledTime?: string;
+    discoveryCallNotes?: string;
+  }
+) => {
+  const lead = await Lead.findById(leadId);
+  if (!lead) {
+    throw new AppError(httpStatus.NOT_FOUND, "Lead not found");
+  }
+
+  // Validate that the scheduled date is not in the past
+  const scheduledDate = new Date(payload.discoveryCallScheduledDate);
+  const now = new Date();
+
+  // Reset time part for date comparison only (if comparing just dates)
+  scheduledDate.setHours(0, 0, 0, 0);
+  now.setHours(0, 0, 0, 0);
+
+  if (scheduledDate < now) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Cannot schedule discovery call for a past date");
+  }
+
+  const updateData: any = {
+    discoveryCallScheduledDate: payload.discoveryCallScheduledDate,
+    discoveryCallScheduledTime: payload.discoveryCallScheduledTime,
+    discoveryCallNotes: payload.discoveryCallNotes,
+    status: "Discovery Call Scheduled",
+  };
+
+  const result = await Lead.findByIdAndUpdate(leadId, updateData, {
+    new: true,
+    runValidators: true,
+  });
+
+  return result;
+};
+
 export const LeadServices = {
   addLead,
   getAllLeads,
   getSingleLead,
   updateLead,
   addFollowUp,
+  deleteFollowUp,
   deleteLead,
   getLeadStatistics,
+  scheduleDiscoveryCall,
 };

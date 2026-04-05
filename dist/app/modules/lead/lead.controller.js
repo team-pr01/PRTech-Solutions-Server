@@ -83,6 +83,17 @@ const addFollowUp = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
         data: result,
     });
 }));
+// Delete Follow Up
+const deleteFollowUp = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { leadId, followUpId } = req.params;
+    const result = yield lead_services_1.LeadServices.deleteFollowUp(leadId, followUpId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: `${result.deletedFollowUpKey} deleted successfully`,
+        data: result.lead,
+    });
+}));
 // Delete Lead (Soft Delete)
 const deleteLead = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { leadId } = req.params;
@@ -104,12 +115,30 @@ const getLeadStatistics = (0, catchAsync_1.default)((req, res) => __awaiter(void
         data: result,
     });
 }));
+// Schedule Discovery Call
+const scheduleDiscoveryCall = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { leadId } = req.params;
+    const { discoveryCallScheduledDate, discoveryCallScheduledTime, discoveryCallNotes } = req.body;
+    const result = yield lead_services_1.LeadServices.scheduleDiscoveryCall(leadId, {
+        discoveryCallScheduledDate,
+        discoveryCallScheduledTime,
+        discoveryCallNotes,
+    });
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Discovery call scheduled successfully",
+        data: result,
+    });
+}));
 exports.LeadControllers = {
     addLead,
     getAllLeads,
     getSingleLead,
     updateLead,
     addFollowUp,
+    deleteFollowUp,
     deleteLead,
     getLeadStatistics,
+    scheduleDiscoveryCall,
 };

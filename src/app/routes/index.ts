@@ -5,6 +5,7 @@ import { ClientRoutes } from "../modules/client/client.route";
 import { AdminRoutes } from "../modules/admin/admin.route";
 import { ProjectRoutes } from "../modules/project/project.routes";
 import { LeadRoutes } from "../modules/lead/lead.routes";
+import { CategoryRoutes } from "../modules/categories/categories.route";
 
 const router = Router();
 
@@ -32,6 +33,10 @@ const moduleRoutes = [
   {
     path: "/lead",
     route: LeadRoutes,
+  },
+  {
+    path: "/category",
+    route: CategoryRoutes,
   },
 ];
 

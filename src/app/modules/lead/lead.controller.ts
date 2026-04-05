@@ -98,6 +98,20 @@ const addFollowUp = catchAsync(async (req, res) => {
   });
 });
 
+// Delete Follow Up
+const deleteFollowUp = catchAsync(async (req, res) => {
+  const { leadId, followUpId } = req.params;
+  
+  const result = await LeadServices.deleteFollowUp(leadId, followUpId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: `${result.deletedFollowUpKey} deleted successfully`,
+    data: result.lead,
+  });
+});
+
 // Delete Lead (Soft Delete)
 const deleteLead = catchAsync(async (req, res) => {
   const { leadId } = req.params;
@@ -123,12 +137,34 @@ const getLeadStatistics = catchAsync(async (req, res) => {
   });
 });
 
+// Schedule Discovery Call
+const scheduleDiscoveryCall = catchAsync(async (req, res) => {
+  const { leadId } = req.params;
+  const { discoveryCallScheduledDate, discoveryCallScheduledTime, discoveryCallNotes } = req.body;
+  
+  const result = await LeadServices.scheduleDiscoveryCall(leadId, {
+    discoveryCallScheduledDate,
+    discoveryCallScheduledTime,
+    discoveryCallNotes,
+  });
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Discovery call scheduled successfully",
+    data: result,
+  });
+});
+
+
 export const LeadControllers = {
   addLead,
   getAllLeads,
   getSingleLead,
   updateLead,
   addFollowUp,
+  deleteFollowUp,
   deleteLead,
   getLeadStatistics,
+  scheduleDiscoveryCall,
 };

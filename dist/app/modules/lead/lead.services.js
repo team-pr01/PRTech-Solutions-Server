@@ -69,11 +69,22 @@ const getAllLeads = (...args_1) => __awaiter(void 0, [...args_1], void 0, functi
     if (filters.category) {
         query.category = { $regex: `^${filters.category.trim()}$`, $options: "i" };
     }
-    // PRIORITY FILTER
+    // PRIORITY FILTER (Fix for number priority)
     if (filters.priority) {
-        query.priority = { $regex: `^${filters.priority.trim()}$`, $options: "i" };
+        query.priority = parseInt(filters.priority); // Convert to number, not regex
     }
-    // DISCOVERY CALL SCHEDULED DATE RANGE
+    // DISCOVERY CALL SCHEDULED DATE - SINGLE DATE (FIXED)
+    if (filters.discoveryCallScheduledDate) {
+        const date = new Date(filters.discoveryCallScheduledDate);
+        // Match the entire day (from start to end)
+        const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+        query.discoveryCallScheduledDate = {
+            $gte: startOfDay,
+            $lte: endOfDay,
+        };
+    }
+    // DISCOVERY CALL DATE RANGE (if you want to keep both options)
     if (filters.discoveryCallFrom || filters.discoveryCallTo) {
         query.discoveryCallScheduledDate = {};
         if (filters.discoveryCallFrom) {
@@ -83,8 +94,18 @@ const getAllLeads = (...args_1) => __awaiter(void 0, [...args_1], void 0, functi
             query.discoveryCallScheduledDate.$lte = new Date(filters.discoveryCallTo);
         }
     }
-    // FOLLOW UP DATE RANGE
+    // FOLLOW UP DATE FILTER (SINGLE DATE)
     if (filters.followUpDate) {
+        const date = new Date(filters.followUpDate);
+        const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+        query["followUps.followUpDate"] = {
+            $gte: startOfDay,
+            $lte: endOfDay,
+        };
+    }
+    // FOLLOW UP DATE RANGE (optional)
+    if (filters.followUpFrom || filters.followUpTo) {
         query["followUps.followUpDate"] = {};
         if (filters.followUpFrom) {
             query["followUps.followUpDate"].$gte = new Date(filters.followUpFrom);
@@ -137,6 +158,26 @@ const addFollowUp = (leadId, payload) => __awaiter(void 0, void 0, void 0, funct
     }
     yield lead.save();
     return lead;
+});
+// Delete Follow Up
+const deleteFollowUp = (leadId, followUpId) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    const lead = yield lead_model_1.default.findById(leadId);
+    if (!lead) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Lead not found");
+    }
+    const followUpExists = (_a = lead.followUps) === null || _a === void 0 ? void 0 : _a.some((followUp) => { var _a; return ((_a = followUp._id) === null || _a === void 0 ? void 0 : _a.toString()) === followUpId; });
+    if (!followUpExists) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Follow up not found");
+    }
+    // Find the follow up to get its key for response message
+    const followUpToDelete = lead.followUps.find((followUp) => { var _a; return ((_a = followUp._id) === null || _a === void 0 ? void 0 : _a.toString()) === followUpId; });
+    lead.followUps = (_b = lead.followUps) === null || _b === void 0 ? void 0 : _b.filter((followUp) => { var _a; return ((_a = followUp._id) === null || _a === void 0 ? void 0 : _a.toString()) !== followUpId; });
+    yield lead.save();
+    return {
+        lead,
+        deletedFollowUpKey: followUpToDelete === null || followUpToDelete === void 0 ? void 0 : followUpToDelete.key,
+    };
 });
 // Delete lead (Soft delete)
 const deleteLead = (leadId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -214,12 +255,41 @@ const getLeadStatistics = () => __awaiter(void 0, void 0, void 0, function* () {
         priorityBreakdown: {}
     };
 });
+// Schedule Discovery Call
+const scheduleDiscoveryCall = (leadId, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const lead = yield lead_model_1.default.findById(leadId);
+    if (!lead) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Lead not found");
+    }
+    // Validate that the scheduled date is not in the past
+    const scheduledDate = new Date(payload.discoveryCallScheduledDate);
+    const now = new Date();
+    // Reset time part for date comparison only (if comparing just dates)
+    scheduledDate.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+    if (scheduledDate < now) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Cannot schedule discovery call for a past date");
+    }
+    const updateData = {
+        discoveryCallScheduledDate: payload.discoveryCallScheduledDate,
+        discoveryCallScheduledTime: payload.discoveryCallScheduledTime,
+        discoveryCallNotes: payload.discoveryCallNotes,
+        status: "Discovery Call Scheduled",
+    };
+    const result = yield lead_model_1.default.findByIdAndUpdate(leadId, updateData, {
+        new: true,
+        runValidators: true,
+    });
+    return result;
+});
 exports.LeadServices = {
     addLead,
     getAllLeads,
     getSingleLead,
     updateLead,
     addFollowUp,
+    deleteFollowUp,
     deleteLead,
     getLeadStatistics,
+    scheduleDiscoveryCall,
 };
