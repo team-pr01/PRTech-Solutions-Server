@@ -4,6 +4,7 @@ import { userRoutes } from "../modules/users/users.route";
 import { ClientRoutes } from "../modules/client/client.route";
 import { AdminRoutes } from "../modules/admin/admin.route";
 import { ProjectRoutes } from "../modules/project/project.routes";
+import { LeadRoutes } from "../modules/lead/lead.routes";
 
 const router = Router();
 
@@ -27,6 +28,10 @@ const moduleRoutes = [
   {
     path: "/project",
     route: ProjectRoutes,
+  },
+  {
+    path: "/lead",
+    route: LeadRoutes,
   },
 ];
 
