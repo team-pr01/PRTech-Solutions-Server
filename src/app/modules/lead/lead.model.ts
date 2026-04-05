@@ -41,8 +41,9 @@ const LeadSchema = new Schema<TLead>(
       trim: true, 
       index: true 
     },
-    city: { 
+    city: {
       type: String, 
+      required: true,
       trim: true, 
       index: true 
     },
@@ -53,13 +54,11 @@ const LeadSchema = new Schema<TLead>(
     
     // Owner Information
     ownerName: { 
-      type: String, 
-      required: true, 
+      type: String,
       trim: true 
     },
     ownerContactNumber: { 
       type: String, 
-      required: true, 
       trim: true 
     },
     isWhatsapp: { 
@@ -81,15 +80,14 @@ const LeadSchema = new Schema<TLead>(
     
     // Lead Details
     issueFound: { 
-      type: String, 
+      type: String,
+      required: true,
       trim: true 
     },
     priority: { 
-      type: Number, 
-      required: true, 
+      type: Number,
       min: 1, 
       max: 5,
-      default: 3,
       index: true 
     },
     category: { 

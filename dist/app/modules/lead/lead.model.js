@@ -34,6 +34,7 @@ const LeadSchema = new mongoose_1.Schema({
     },
     city: {
         type: String,
+        required: true,
         trim: true,
         index: true
     },
@@ -44,12 +45,10 @@ const LeadSchema = new mongoose_1.Schema({
     // Owner Information
     ownerName: {
         type: String,
-        required: true,
         trim: true
     },
     ownerContactNumber: {
         type: String,
-        required: true,
         trim: true
     },
     isWhatsapp: {
@@ -70,14 +69,13 @@ const LeadSchema = new mongoose_1.Schema({
     // Lead Details
     issueFound: {
         type: String,
+        required: true,
         trim: true
     },
     priority: {
         type: Number,
-        required: true,
         min: 1,
         max: 5,
-        default: 3,
         index: true
     },
     category: {
