@@ -96,6 +96,17 @@ const changeUserRole = catchAsync(async (req, res) => {
   });
 });
 
+const addStaff = catchAsync(async (req, res) => {
+  const result = await AuthServices.addStaff(req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Staff added successfully.",
+    data: result,
+  });
+});
+
 export const AuthControllers = {
   signup,
   loginUser,
@@ -104,4 +115,5 @@ export const AuthControllers = {
   resetPassword,
   changePassword,
   changeUserRole,
+  addStaff,
 };

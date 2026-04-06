@@ -8,6 +8,7 @@ import { createToken } from "./auth.utils";
 import { User } from "./auth.model";
 import { sendEmail } from "../../utils/sendEmail";
 import bcrypt from "bcrypt";
+import { Staff } from "../staff/staff.model";
 
 const signup = async (
   payload: Partial<TUser>,
@@ -314,6 +315,60 @@ const changeUserRole = async (payload: { userId: string; role: any }) => {
   return result;
 };
 
+const addStaff = async (payload: any) => {
+  const {
+    name,
+    email,
+    phoneNumber,
+    gender,
+    country,
+    city,
+    address,
+    password,
+    pagesAssigned,
+    jobRole,
+  } = payload;
+
+  const isUserExistsByEmail = await User.findOne({ email });
+  if (isUserExistsByEmail) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "User already exists with this email"
+    );
+  }
+
+  const isUserExistsByPhone = await User.findOne({ phoneNumber });
+  if (isUserExistsByPhone) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "User already exists with this phone number"
+    );
+  }
+
+  const user = await User.create({
+    name,
+    email,
+    phoneNumber,
+    gender,
+    country,
+    city,
+    address,
+    password,
+    role: "staff",
+    isOtpVerified: true,
+    otp: null,
+    otpExpireAt: null,
+  });
+
+  const staff = await Staff.create({
+    userId: user._id,
+    pagesAssigned: pagesAssigned || [],
+    jobRole,
+  });
+
+  return { user, staff };
+};
+
 export const AuthServices = {
   signup,
   loginUser,
@@ -322,4 +377,5 @@ export const AuthServices = {
   resetPassword,
   changePassword,
   changeUserRole,
+  addStaff,
 };

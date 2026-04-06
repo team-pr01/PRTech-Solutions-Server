@@ -22,6 +22,7 @@ const auth_utils_1 = require("./auth.utils");
 const auth_model_1 = require("./auth.model");
 const sendEmail_1 = require("../../utils/sendEmail");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const staff_model_1 = require("../staff/staff.model");
 const signup = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     // Check if user exists
     const isUserExists = yield auth_model_1.User.findOne({ email: payload.email });
@@ -229,6 +230,37 @@ const changeUserRole = (payload) => __awaiter(void 0, void 0, void 0, function* 
     });
     return result;
 });
+const addStaff = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const { name, email, phoneNumber, gender, country, city, address, password, pagesAssigned, jobRole, } = payload;
+    const isUserExistsByEmail = yield auth_model_1.User.findOne({ email });
+    if (isUserExistsByEmail) {
+        throw new AppError_1.default(http_status_1.default.CONFLICT, "User already exists with this email");
+    }
+    const isUserExistsByPhone = yield auth_model_1.User.findOne({ phoneNumber });
+    if (isUserExistsByPhone) {
+        throw new AppError_1.default(http_status_1.default.CONFLICT, "User already exists with this phone number");
+    }
+    const user = yield auth_model_1.User.create({
+        name,
+        email,
+        phoneNumber,
+        gender,
+        country,
+        city,
+        address,
+        password,
+        role: "staff",
+        isOtpVerified: true,
+        otp: null,
+        otpExpireAt: null,
+    });
+    const staff = yield staff_model_1.Staff.create({
+        userId: user._id,
+        pagesAssigned: pagesAssigned || [],
+        jobRole,
+    });
+    return { user, staff };
+});
 exports.AuthServices = {
     signup,
     loginUser,
@@ -237,4 +269,5 @@ exports.AuthServices = {
     resetPassword,
     changePassword,
     changeUserRole,
+    addStaff,
 };

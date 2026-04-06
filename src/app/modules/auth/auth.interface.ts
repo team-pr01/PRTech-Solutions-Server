@@ -13,12 +13,13 @@ export type TUser = {
   name: string;
   email: string;
   phoneNumber: string;
+  gender?: string;
   pinCode?: string;
+  country?: string;
   city?: string;
-  addressLine1?: string;
-  addressLine2?: string;
+  address?: string;
   password: string;
-  role: "user" | "admin" | "moderator";
+  role: "user" | "admin" | "staff";
   isDeleted?: boolean;
   isSuspended?: boolean;
   createdAt: Date;

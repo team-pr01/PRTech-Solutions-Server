@@ -9,4 +9,5 @@ export type TAccounts = {
     paidBy?: string;
     paymentMethod: string;
     date: Date;
+    note?: string;
 }

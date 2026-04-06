@@ -40,14 +40,11 @@ const userSchema = new Schema<TUser, UserModel>(
       required: true,
       trim: true,
     },
+    gender : { type: String, required: false },
     pinCode: { type: String, required: false },
+    country : { type: String, required: false },
     city: { type: String, required: false },
-    addressLine1: {
-      type: String,
-      required: false,
-      trim: true,
-    },
-    addressLine2: {
+    address: {
       type: String,
       required: false,
       trim: true,
@@ -59,7 +56,7 @@ const userSchema = new Schema<TUser, UserModel>(
     },
     role: {
       type: String,
-      enum: ["user", "admin", "moderator", "super-admin"],
+      enum: ["user", "admin", "staff"],
       default: "user",
     },
 

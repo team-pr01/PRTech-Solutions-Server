@@ -7,6 +7,7 @@ import { UserRole } from "./auth.constants";
 // import { upload } from "../../utils/sendImageToCloudinary";
 const router = express.Router();
 
+router.post("/add-staff", auth(UserRole.admin), AuthControllers.addStaff);
 router.post("/signup", AuthControllers.signup);
 
 router.post(

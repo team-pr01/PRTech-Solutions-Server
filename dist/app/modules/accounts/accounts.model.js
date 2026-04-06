@@ -60,6 +60,11 @@ const AccountsSchema = new mongoose_1.Schema({
         required: true,
         index: true,
     },
+    note: {
+        type: String,
+        trim: true,
+        default: null,
+    }
 }, {
     timestamps: true,
 });

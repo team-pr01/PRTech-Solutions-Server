@@ -12,6 +12,7 @@ const auth_1 = __importDefault(require("../../middlewares/auth"));
 const auth_constants_1 = require("./auth.constants");
 // import { upload } from "../../utils/sendImageToCloudinary";
 const router = express_1.default.Router();
+router.post("/add-staff", (0, auth_1.default)(auth_constants_1.UserRole.admin), auth_controller_1.AuthControllers.addStaff);
 router.post("/signup", auth_controller_1.AuthControllers.signup);
 router.post("/login", (0, validateRequest_1.default)(auth_validation_1.AuthValidations.LoginValidationSchema), auth_controller_1.AuthControllers.loginUser);
 router.post("/refresh-token", (0, validateRequest_1.default)(auth_validation_1.AuthValidations.refreshTokenValidationSchema), auth_controller_1.AuthControllers.refreshToken);

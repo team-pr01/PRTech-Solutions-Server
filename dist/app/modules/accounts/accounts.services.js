@@ -118,7 +118,10 @@ const getAccountSummary = (...args_1) => __awaiter(void 0, [...args_1], void 0, 
         { $match: query },
         {
             $group: {
-                _id: "$type",
+                _id: {
+                    type: "$type",
+                    currency: "$currency",
+                },
                 totalAmount: { $sum: "$totalAmount" },
                 totalPaid: { $sum: "$paidAmount" },
                 totalPending: { $sum: "$pendingAmount" },
@@ -126,25 +129,45 @@ const getAccountSummary = (...args_1) => __awaiter(void 0, [...args_1], void 0, 
             },
         },
     ]);
-    const earnings = summary.find(s => s._id === "earning") || { totalAmount: 0, totalPaid: 0, totalPending: 0, count: 0 };
-    const expenses = summary.find(s => s._id === "expense") || { totalAmount: 0, totalPaid: 0, totalPending: 0, count: 0 };
-    return {
-        earnings: {
-            total: earnings.totalAmount,
-            paid: earnings.totalPaid,
-            pending: earnings.totalPending,
-            count: earnings.count,
-        },
-        expenses: {
-            total: expenses.totalAmount,
-            paid: expenses.totalPaid,
-            pending: expenses.totalPending,
-            count: expenses.count,
-        },
-        balance: earnings.totalAmount - expenses.totalAmount,
-        netPaid: earnings.totalPaid - expenses.totalPaid,
-        netPending: earnings.totalPending - expenses.totalPending,
-    };
+    // Group by currency
+    const currencies = [...new Set(summary.map(s => s._id.currency))];
+    const result = {};
+    // Initialize for each currency
+    currencies.forEach(currency => {
+        result[currency] = {
+            earnings: { total: 0, paid: 0, pending: 0, count: 0 },
+            expenses: { total: 0, paid: 0, pending: 0, count: 0 },
+            balance: 0,
+            netPaid: 0,
+            netPending: 0,
+        };
+    });
+    // Populate data
+    summary.forEach(item => {
+        const { type, currency } = item._id;
+        const currencyData = result[currency];
+        if (type === "earning") {
+            currencyData.earnings = {
+                total: item.totalAmount,
+                paid: item.totalPaid,
+                pending: item.totalPending,
+                count: item.count,
+            };
+        }
+        else if (type === "expense") {
+            currencyData.expenses = {
+                total: item.totalAmount,
+                paid: item.totalPaid,
+                pending: item.totalPending,
+                count: item.count,
+            };
+        }
+        // Calculate balance for each currency
+        currencyData.balance = currencyData.earnings.total - currencyData.expenses.total;
+        currencyData.netPaid = currencyData.earnings.paid - currencyData.expenses.paid;
+        currencyData.netPending = currencyData.earnings.pending - currencyData.expenses.pending;
+    });
+    return result;
 });
 exports.AccountServices = {
     addAccount,

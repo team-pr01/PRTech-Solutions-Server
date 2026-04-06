@@ -7,6 +7,7 @@ import { ProjectRoutes } from "../modules/project/project.routes";
 import { LeadRoutes } from "../modules/lead/lead.routes";
 import { CategoryRoutes } from "../modules/categories/categories.route";
 import { AccountRoutes } from "../modules/accounts/accounts.route";
+import { StaffRoutes } from "../modules/staff/staff.route";
 
 const router = Router();
 
@@ -42,6 +43,10 @@ const moduleRoutes = [
   {
     path: "/account",
     route: AccountRoutes,
+  },
+  {
+    path: "/staff",
+    route: StaffRoutes,
   },
 ];
 

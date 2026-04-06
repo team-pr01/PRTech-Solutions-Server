@@ -61,6 +61,11 @@ const AccountsSchema = new Schema<TAccounts>(
       required: true,
       index: true,
     },
+    note: {
+      type: String,
+      trim: true,
+      default: null,
+    }
   },
   {
     timestamps: true,
