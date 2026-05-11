@@ -79,10 +79,80 @@ const deleteProject = catchAsync(async (req, res) => {
   });
 });
 
+// Add Phase
+const addPhase = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const result = await ProjectServices.addPhase(projectId, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "Phase added successfully",
+    data: result,
+  });
+});
+
+// Update Phase
+const updatePhase = catchAsync(async (req, res) => {
+  const { projectId, phaseId } = req.params;
+  const result = await ProjectServices.updatePhase(projectId, phaseId, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Phase updated successfully",
+    data: result,
+  });
+});
+
+// Delete Phase
+const deletePhase = catchAsync(async (req, res) => {
+  const { projectId, phaseId } = req.params;
+  const result = await ProjectServices.deletePhase(projectId, phaseId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Phase deleted successfully",
+    data: result,
+  });
+});
+
+// Get Single Phase
+const getSinglePhase = catchAsync(async (req, res) => {
+  const { projectId, phaseId } = req.params;
+  const result = await ProjectServices.getSinglePhase(projectId, phaseId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Phase retrieved successfully",
+    data: result,
+  });
+});
+
+// Get All Phases
+const getAllPhases = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const result = await ProjectServices.getAllPhases(projectId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Phases retrieved successfully",
+    data: result,
+  });
+});
+
 export const ProjectControllers = {
   addProject,
   getAllProjects,
   getSingleProject,
   updateProject,
   deleteProject,
+  addPhase,
+  updatePhase,
+  deletePhase,
+  getSinglePhase,
+  getAllPhases,
 };

@@ -36,4 +36,35 @@ router.delete(
   ProjectControllers.deleteProject
 );
 
+// Phase Management Routes
+router.post(
+  "/phases/add/:projectId",
+  auth(UserRole.admin, UserRole.staff),
+  ProjectControllers.addPhase
+);
+
+router.get(
+  "/phases/:projectId",
+  auth(UserRole.admin, UserRole.staff),
+  ProjectControllers.getAllPhases
+);
+
+router.get(
+  "/phases/:projectId/:phaseId",
+  auth(UserRole.admin, UserRole.staff),
+  ProjectControllers.getSinglePhase
+);
+
+router.put(
+  "/phases/update/:projectId/:phaseId",
+  auth(UserRole.admin, UserRole.staff),
+  ProjectControllers.updatePhase
+);
+
+router.delete(
+  "/phases/delete/:projectId/:phaseId",
+  auth(UserRole.admin, UserRole.staff),
+  ProjectControllers.deletePhase
+);
+
 export const ProjectRoutes = router;
