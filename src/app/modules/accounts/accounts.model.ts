@@ -12,7 +12,7 @@ const AccountsSchema = new Schema<TAccounts>(
     },
     expenseType: {
       type: String,
-      enum: ["salary", "ui/ux", "tools", "graphics", "deployment", "other"],
+      enum: ["salary", "ui/ux", "tools", "graphics", "deployment", "project", "other"],
       required: function(this: TAccounts) {
         return this.type === "expense";
       },
@@ -71,14 +71,6 @@ const AccountsSchema = new Schema<TAccounts>(
     timestamps: true,
   }
 );
-
-// Pre-save middleware to calculate pending amount
-AccountsSchema.pre("save", function(next) {
-  if (this.totalAmount && this.paidAmount !== undefined) {
-    this.pendingAmount = this.totalAmount - this.paidAmount;
-  }
-  next();
-});
 
 // Compound indexes for better query performance
 AccountsSchema.index({ type: 1, date: -1 });

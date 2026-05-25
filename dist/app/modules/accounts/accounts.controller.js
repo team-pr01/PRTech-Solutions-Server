@@ -46,6 +46,15 @@ const getAllAccounts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
         data: result,
     });
 }));
+const getAccountStats = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield accounts_services_1.AccountServices.getAccountStats();
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Account statistics retrieved successfully",
+        data: result,
+    });
+}));
 // Get Single Account Transaction
 const getSingleAccount = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { accountId } = req.params;
@@ -98,6 +107,7 @@ const getAccountSummary = (0, catchAsync_1.default)((req, res) => __awaiter(void
 exports.AccountControllers = {
     addAccount,
     getAllAccounts,
+    getAccountStats,
     getSingleAccount,
     updateAccount,
     deleteAccount,

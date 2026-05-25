@@ -19,6 +19,7 @@ const AppError_1 = __importDefault(require("../../errors/AppError"));
 const project_model_1 = __importDefault(require("./project.model"));
 const infinitePaginate_1 = require("../../utils/infinitePaginate");
 const client_model_1 = __importDefault(require("../client/client.model"));
+const accounts_model_1 = __importDefault(require("../accounts/accounts.model"));
 // Add Project
 const addProject = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { clientId, name } = payload;
@@ -328,6 +329,27 @@ const getAllPhases = (projectId) => __awaiter(void 0, void 0, void 0, function* 
     }
     return project.phases || [];
 });
+const addExpenditure = (projectId, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(payload);
+    const project = yield project_model_1.default.findById(projectId);
+    if (!project) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Project not found");
+    }
+    project.expenditures.push(payload);
+    yield project.save();
+    const account = yield accounts_model_1.default.create({
+        type: "expense",
+        expenseType: "project",
+        currency: payload.currency,
+        description: payload.description,
+        totalAmount: payload.totalAmount,
+        pendingAmount: payload.pendingAmount,
+        paidAmount: payload.paidAmount,
+        date: payload.date,
+        paymentMethod: payload.paymentMethod
+    });
+    return account;
+});
 exports.ProjectServices = {
     addProject,
     getAllProjects,
@@ -341,4 +363,5 @@ exports.ProjectServices = {
     deletePhase,
     getSinglePhase,
     getAllPhases,
+    addExpenditure,
 };

@@ -12,6 +12,7 @@ const router = express_1.default.Router();
 router.post("/add", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), accounts_controller_1.AccountControllers.addAccount);
 router.get("/", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), accounts_controller_1.AccountControllers.getAllAccounts);
 router.get("/summary", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), accounts_controller_1.AccountControllers.getAccountSummary);
+router.get("/stats", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), accounts_controller_1.AccountControllers.getAccountStats);
 router.get("/:accountId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), accounts_controller_1.AccountControllers.getSingleAccount);
 router.put("/update/:accountId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), accounts_controller_1.AccountControllers.updateAccount);
 router.delete("/delete/:accountId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), accounts_controller_1.AccountControllers.deleteAccount);

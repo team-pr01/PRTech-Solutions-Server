@@ -25,6 +25,8 @@ export type TExpenditure = {
   description: string;
   totalAmount: number;
   pendingAmount: number;
+  date: Date;
+  paymentMethod : string;
 };
 
 export type TContactPerson = {

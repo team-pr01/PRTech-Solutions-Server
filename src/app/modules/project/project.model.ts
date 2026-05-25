@@ -44,9 +44,11 @@ const PhaseSchema = new Schema<TPhase>(
 // Expenditure Schema
 const ExpenditureSchema = new Schema<TExpenditure>(
   {
-    description: { type: String, required: true, trim: true },
-    totalAmount: { type: Number, required: true, min: 0 },
-    pendingAmount: { type: Number, required: true, min: 0 },
+    description: { type: String, trim: true },
+    totalAmount: { type: Number, min: 0 },
+    pendingAmount: { type: Number, min: 0 },
+    date: { type: Date },
+    paymentMethod: { type: String },
   },
   { _id: true }
 );
@@ -109,18 +111,18 @@ ProjectSchema.index({ clientId: 1, createdAt: -1 });
 ProjectSchema.index({ startDate: 1, endDate: 1 });
 
 // Pre-save middleware to calculate project pending amount from phases
-ProjectSchema.pre("save", function(next) {
+ProjectSchema.pre("save", function (next) {
   // Calculate total pending amount from all phases
   if (this.phases && this.phases.length > 0) {
     const totalPhasePending = this.phases.reduce((sum, phase) => sum + (phase.pendingAmount || 0), 0);
     this.pendingAmount = totalPhasePending;
   }
-  
+
   // If pendingAmount is not set from phases, use the provided value
   if (!this.pendingAmount && this.price) {
     this.pendingAmount = this.price;
   }
-  
+
   next();
 });
 

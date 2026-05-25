@@ -81,6 +81,12 @@ router.put(
 //   ProjectControllers.deleteInstallment
 // );
 
+router.post(
+  "/:projectId/expenditure/add",
+  auth(UserRole.admin, UserRole.staff),
+  ProjectControllers.addExpenditure
+);
+
 router.delete(
   "/phases/delete/:projectId/:phaseId",
   auth(UserRole.admin, UserRole.staff),

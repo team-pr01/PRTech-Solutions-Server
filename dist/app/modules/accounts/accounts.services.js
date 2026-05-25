@@ -18,17 +18,15 @@ const http_status_1 = __importDefault(require("http-status"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const accounts_model_1 = __importDefault(require("./accounts.model"));
 const infinitePaginate_1 = require("../../utils/infinitePaginate");
+const project_model_1 = __importDefault(require("../project/project.model"));
 // Add Account Transaction
 const addAccount = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { type, expenseType, totalAmount, paidAmount } = payload;
+    const { type, expenseType } = payload;
     // Validate expenseType for expense transactions
     if (type === "expense" && !expenseType) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "expenseType is required for expense transactions");
     }
-    // Calculate pending amount
-    const pendingAmount = totalAmount - (paidAmount || 0);
-    const payloadData = Object.assign(Object.assign({}, payload), { pendingAmount, paidAmount: paidAmount || 0 });
-    const result = yield accounts_model_1.default.create(payloadData);
+    const result = yield accounts_model_1.default.create(payload);
     return result;
 });
 // Get all account transactions with filtering and pagination
@@ -65,6 +63,127 @@ const getAllAccounts = (...args_1) => __awaiter(void 0, [...args_1], void 0, fun
         ];
     }
     return (0, infinitePaginate_1.infinitePaginate)(accounts_model_1.default, query, skip, limit, []);
+});
+const getAccountStats = () => __awaiter(void 0, void 0, void 0, function* () {
+    // Fetch all projects
+    const projects = yield project_model_1.default.find({});
+    // Fetch all accounts (for earnings and expenses)
+    const accounts = yield accounts_model_1.default.find({});
+    // Initialize result objects for BDT and INR
+    const result = {
+        BDT: {
+            earnings: {
+                total: 0,
+                pending: 0,
+            },
+            expenses: {
+                total: 0,
+                paid: 0,
+                pending: 0,
+            },
+            balance: 0,
+        },
+        INR: {
+            earnings: {
+                total: 0,
+                pending: 0,
+            },
+            expenses: {
+                total: 0,
+                paid: 0,
+                pending: 0,
+            },
+            balance: 0,
+        },
+        monthlyData: [],
+    };
+    // Initialize monthly data object for all months
+    const monthlyStats = {};
+    // Initialize for last 12 months
+    const months = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    months.forEach(month => {
+        monthlyStats[month] = { earnings: 0, expenses: 0 };
+    });
+    // ========== 1. PROCESS EARNINGS FROM PROJECTS ==========
+    for (const project of projects) {
+        const currency = project.priceCurrency;
+        if (!result[currency])
+            continue;
+        if (project.phases && project.phases.length > 0) {
+            for (const phase of project.phases) {
+                // Calculate received amount (totalAmount - pendingAmount)
+                const receivedAmount = (phase.totalAmount || 0) - (phase.pendingAmount || 0);
+                // Add received amount to earnings total
+                result[currency].earnings.total += receivedAmount;
+                result[currency].earnings.pending += phase.pendingAmount || 0;
+                // Process monthly data from installments
+                for (const installment of phase.installments || []) {
+                    if (installment.date) {
+                        const date = new Date(installment.date);
+                        const monthName = months[date.getMonth()];
+                        if (monthName && monthlyStats[monthName]) {
+                            monthlyStats[monthName].earnings += installment.amount || 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // ========== 2. PROCESS EARNINGS FROM ACCOUNTS (type "earning") ==========
+    for (const account of accounts) {
+        if (account.type === "earning") {
+            const currency = account.currency;
+            if (!result[currency])
+                continue;
+            // Add to earnings from accounts
+            result[currency].earnings.total += account.totalAmount || 0;
+            // Process monthly data from account date
+            if (account.date) {
+                const date = new Date(account.date);
+                const monthName = months[date.getMonth()];
+                if (monthName && monthlyStats[monthName]) {
+                    monthlyStats[monthName].earnings += account.totalAmount || 0;
+                }
+            }
+        }
+    }
+    // ========== 3. PROCESS EXPENSES FROM ACCOUNTS (type "expense") ==========
+    for (const account of accounts) {
+        if (account.type === "expense") {
+            const currency = account.currency;
+            if (!result[currency])
+                continue;
+            // IMPORTANT: For expenses total, use PAID AMOUNT, not total amount
+            const paidAmount = account.paidAmount || 0;
+            // Add to expenses - total is the paid amount
+            result[currency].expenses.total += paidAmount;
+            result[currency].expenses.paid += paidAmount;
+            result[currency].expenses.pending += account.pendingAmount || 0;
+            // Process monthly data from account date - use paid amount
+            if (account.date) {
+                const date = new Date(account.date);
+                const monthName = months[date.getMonth()];
+                if (monthName && monthlyStats[monthName]) {
+                    monthlyStats[monthName].expenses += paidAmount;
+                }
+            }
+        }
+    }
+    // Calculate balances for each currency
+    for (const currency of ["BDT", "INR"]) {
+        result[currency].balance = result[currency].earnings.total - result[currency].expenses.total;
+    }
+    // Convert monthly stats to array format
+    const monthlyData = months.map(month => ({
+        month,
+        earnings: monthlyStats[month].earnings,
+        expenses: monthlyStats[month].expenses,
+    }));
+    result.monthlyData = monthlyData;
+    return result;
 });
 // Get single account transaction by id
 const getSingleAccount = (accountId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -172,6 +291,7 @@ const getAccountSummary = (...args_1) => __awaiter(void 0, [...args_1], void 0, 
 exports.AccountServices = {
     addAccount,
     getAllAccounts,
+    getAccountStats,
     getSingleAccount,
     updateAccount,
     deleteAccount,

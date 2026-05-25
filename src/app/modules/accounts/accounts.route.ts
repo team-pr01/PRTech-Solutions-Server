@@ -24,6 +24,12 @@ router.get(
 );
 
 router.get(
+  "/stats",
+  auth(UserRole.admin, UserRole.staff),
+  AccountControllers.getAccountStats
+);
+
+router.get(
   "/:accountId",
   auth(UserRole.admin, UserRole.staff),
   AccountControllers.getSingleAccount

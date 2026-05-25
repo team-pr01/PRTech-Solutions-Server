@@ -35,9 +35,11 @@ const PhaseSchema = new mongoose_1.Schema({
 }, { _id: true });
 // Expenditure Schema
 const ExpenditureSchema = new mongoose_1.Schema({
-    description: { type: String, required: true, trim: true },
-    totalAmount: { type: Number, required: true, min: 0 },
-    pendingAmount: { type: Number, required: true, min: 0 },
+    description: { type: String, trim: true },
+    totalAmount: { type: Number, min: 0 },
+    pendingAmount: { type: Number, min: 0 },
+    date: { type: Date },
+    paymentMethod: { type: String },
 }, { _id: true });
 // Contact Person Schema
 const ContactPersonSchema = new mongoose_1.Schema({

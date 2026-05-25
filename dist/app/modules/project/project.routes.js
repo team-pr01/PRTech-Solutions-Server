@@ -28,5 +28,6 @@ router.put("/:projectId/phases/:phaseId/installments/update/:installmentId", (0,
 //   auth(UserRole.admin, UserRole.staff),
 //   ProjectControllers.deleteInstallment
 // );
+router.post("/:projectId/expenditure/add", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), project_controller_1.ProjectControllers.addExpenditure);
 router.delete("/phases/delete/:projectId/:phaseId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), project_controller_1.ProjectControllers.deletePhase);
 exports.ProjectRoutes = router;

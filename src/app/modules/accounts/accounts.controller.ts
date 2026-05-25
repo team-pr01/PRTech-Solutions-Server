@@ -51,6 +51,17 @@ const getAllAccounts = catchAsync(async (req, res) => {
   });
 });
 
+const getAccountStats = catchAsync(async (req, res) => {
+  const result = await AccountServices.getAccountStats();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Account statistics retrieved successfully",
+    data: result,
+  });
+});
+
 // Get Single Account Transaction
 const getSingleAccount = catchAsync(async (req, res) => {
   const { accountId } = req.params;
@@ -112,6 +123,7 @@ const getAccountSummary = catchAsync(async (req, res) => {
 export const AccountControllers = {
   addAccount,
   getAllAccounts,
+  getAccountStats,
   getSingleAccount,
   updateAccount,
   deleteAccount,
