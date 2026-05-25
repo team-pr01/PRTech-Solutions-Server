@@ -78,10 +78,94 @@ const deleteProject = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
         data: result,
     });
 }));
+// Add Phase
+const addPhase = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { projectId } = req.params;
+    const result = yield project_services_1.ProjectServices.addPhase(projectId, req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.CREATED,
+        success: true,
+        message: "Phase added successfully",
+        data: result,
+    });
+}));
+// Update Phase
+const updatePhase = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { projectId, phaseId } = req.params;
+    const result = yield project_services_1.ProjectServices.updatePhase(projectId, phaseId, req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Phase updated successfully",
+        data: result,
+    });
+}));
+// Add Installment to Phase
+const addInstallment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { projectId, phaseId } = req.params;
+    const result = yield project_services_1.ProjectServices.addInstallment(projectId, phaseId, req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.CREATED,
+        success: true,
+        message: "Installment added successfully",
+        data: result,
+    });
+}));
+// Update Installment in Phase
+const updateInstallment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { projectId, phaseId, installmentId } = req.params;
+    const result = yield project_services_1.ProjectServices.updateInstallment(projectId, phaseId, installmentId, req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Installment updated successfully",
+        data: result,
+    });
+}));
+// Delete Phase
+const deletePhase = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { projectId, phaseId } = req.params;
+    const result = yield project_services_1.ProjectServices.deletePhase(projectId, phaseId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Phase deleted successfully",
+        data: result,
+    });
+}));
+// Get Single Phase
+const getSinglePhase = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { projectId, phaseId } = req.params;
+    const result = yield project_services_1.ProjectServices.getSinglePhase(projectId, phaseId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Phase retrieved successfully",
+        data: result,
+    });
+}));
+// Get All Phases
+const getAllPhases = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { projectId } = req.params;
+    const result = yield project_services_1.ProjectServices.getAllPhases(projectId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Phases retrieved successfully",
+        data: result,
+    });
+}));
 exports.ProjectControllers = {
     addProject,
     getAllProjects,
     getSingleProject,
     updateProject,
     deleteProject,
+    addPhase,
+    updatePhase,
+    addInstallment,
+    updateInstallment,
+    deletePhase,
+    getSinglePhase,
+    getAllPhases,
 };

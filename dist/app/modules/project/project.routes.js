@@ -15,4 +15,18 @@ router.get("/", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_consta
 router.get("/:projectId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), project_controller_1.ProjectControllers.getSingleProject);
 router.put("/update/:projectId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), project_controller_1.ProjectControllers.updateProject);
 router.delete("/delete/:projectId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), project_controller_1.ProjectControllers.deleteProject);
+// Phase Management Routes
+router.post("/phases/add/:projectId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), project_controller_1.ProjectControllers.addPhase);
+router.get("/phases/:projectId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), project_controller_1.ProjectControllers.getAllPhases);
+router.get("/phases/:projectId/:phaseId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), project_controller_1.ProjectControllers.getSinglePhase);
+router.put("/phases/update/:projectId/:phaseId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), project_controller_1.ProjectControllers.updatePhase);
+// Installment Management Routes
+router.post("/:projectId/phases/:phaseId/installments/add", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), project_controller_1.ProjectControllers.addInstallment);
+router.put("/:projectId/phases/:phaseId/installments/update/:installmentId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), project_controller_1.ProjectControllers.updateInstallment);
+// router.delete(
+//   "/:projectId/phases/:phaseId/installments/delete/:installmentId",
+//   auth(UserRole.admin, UserRole.staff),
+//   ProjectControllers.deleteInstallment
+// );
+router.delete("/phases/delete/:projectId/:phaseId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), project_controller_1.ProjectControllers.deletePhase);
 exports.ProjectRoutes = router;

@@ -21,7 +21,7 @@ const InstallmentSchema = new Schema<TInstallment>(
 // Phase Schema
 const PhaseSchema = new Schema<TPhase>(
   {
-    name: { type: String, required: true, trim: true },
+    name: { type: String, trim: true },
     phaseStatus: {
       type: String,
       enum: ["Pending", "Yet to Start", "Ongoing", "On Hold", "Completed"],
@@ -35,7 +35,7 @@ const PhaseSchema = new Schema<TPhase>(
       default: "Pending",
     },
     installments: [InstallmentSchema],
-    startDate: { type: Date, required: true },
+    startDate: { type: Date },
     endDate: { type: Date },
   },
   { _id: true }

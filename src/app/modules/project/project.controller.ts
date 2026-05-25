@@ -105,6 +105,38 @@ const updatePhase = catchAsync(async (req, res) => {
   });
 });
 
+
+// Add Installment to Phase
+const addInstallment = catchAsync(async (req, res) => {
+  const { projectId, phaseId } = req.params;
+  const result = await ProjectServices.addInstallment(projectId, phaseId, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "Installment added successfully",
+    data: result,
+  });
+});
+
+// Update Installment in Phase
+const updateInstallment = catchAsync(async (req, res) => {
+  const { projectId, phaseId, installmentId } = req.params;
+  const result = await ProjectServices.updateInstallment(
+    projectId, 
+    phaseId, 
+    installmentId, 
+    req.body
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Installment updated successfully",
+    data: result,
+  });
+});
+
 // Delete Phase
 const deletePhase = catchAsync(async (req, res) => {
   const { projectId, phaseId } = req.params;
@@ -152,6 +184,8 @@ export const ProjectControllers = {
   deleteProject,
   addPhase,
   updatePhase,
+  addInstallment,
+  updateInstallment,
   deletePhase,
   getSinglePhase,
   getAllPhases,

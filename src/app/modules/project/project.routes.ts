@@ -61,6 +61,26 @@ router.put(
   ProjectControllers.updatePhase
 );
 
+
+// Installment Management Routes
+router.post(
+  "/:projectId/phases/:phaseId/installments/add",
+  auth(UserRole.admin, UserRole.staff),
+  ProjectControllers.addInstallment
+);
+
+router.put(
+  "/:projectId/phases/:phaseId/installments/update/:installmentId",
+  auth(UserRole.admin, UserRole.staff),
+  ProjectControllers.updateInstallment
+);
+
+// router.delete(
+//   "/:projectId/phases/:phaseId/installments/delete/:installmentId",
+//   auth(UserRole.admin, UserRole.staff),
+//   ProjectControllers.deleteInstallment
+// );
+
 router.delete(
   "/phases/delete/:projectId/:phaseId",
   auth(UserRole.admin, UserRole.staff),

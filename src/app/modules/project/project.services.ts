@@ -152,6 +152,7 @@ const deleteProject = async (projectId: string) => {
   return result;
 };
 
+
 // Add a new phase to a project
 const addPhase = async (projectId: string, phaseData: TPhase) => {
   const project = await Project.findById(projectId);
@@ -167,12 +168,19 @@ const addPhase = async (projectId: string, phaseData: TPhase) => {
   // Add the new phase (MongoDB will auto-generate _id)
   project.phases.push(phaseData);
 
-  // Recalculate project pending amount
-  const totalPhasePending = project.phases.reduce(
+  // Recalculate project totals from all phases
+  const totalPrice = project.phases.reduce(
+    (sum, phase) => sum + (phase.totalAmount || 0),
+    0
+  );
+  
+  const totalPendingAmount = project.phases.reduce(
     (sum, phase) => sum + (phase.pendingAmount || 0),
     0
   );
-  project.pendingAmount = totalPhasePending;
+
+  project.price = totalPrice;
+  project.pendingAmount = totalPendingAmount;
 
   await project.save();
   
@@ -201,35 +209,177 @@ const updatePhase = async (
     throw new AppError(httpStatus.NOT_FOUND, "Phase not found");
   }
 
-  // Update the phase
+  // Get the current phase
   const currentPhase = project.phases[phaseIndex];
-  const updatedPhase = { ...(currentPhase.toObject() as Record<string, unknown>), ...phaseData } as TPhase;
-
-  // If totalAmount changed, recalculate pending amount based on installments
-  if (phaseData.totalAmount !== undefined || phaseData.installments !== undefined) {
-    const totalPaid = (updatedPhase.installments || []).reduce(
-      (sum: number, inst: TInstallment) => sum + (inst.amount || 0),
-      0
-    );
-    updatedPhase.pendingAmount = updatedPhase.totalAmount - totalPaid;
-    updatedPhase.paymentStatus = updatedPhase.pendingAmount <= 0 ? "Paid" : "Pending";
-  }
-
-  project.phases[phaseIndex] = updatedPhase;
-
+  
+  // Update basic fields only (no installments)
+  if (phaseData.name !== undefined) currentPhase.name = phaseData.name;
+  if (phaseData.phaseStatus !== undefined) currentPhase.phaseStatus = phaseData.phaseStatus;
+  if (phaseData.totalAmount !== undefined) currentPhase.totalAmount = phaseData.totalAmount;
+  if (phaseData.startDate !== undefined) currentPhase.startDate = phaseData.startDate;
+  if (phaseData.endDate !== undefined) currentPhase.endDate = phaseData.endDate;
+  if (phaseData.pendingAmount !== undefined) currentPhase.pendingAmount = phaseData.pendingAmount;
+  if (phaseData.paymentStatus !== undefined) currentPhase.paymentStatus = phaseData.paymentStatus;
+  
   // If updating phase name and it was the ongoing phase, update project's onGoingPhase
   if (phaseData.name && project.onGoingPhase === currentPhase.name) {
     project.onGoingPhase = phaseData.name;
   }
 
-  // Recalculate project pending amount
-  const totalPhasePending = project.phases.reduce(
-    (sum, phase) => sum + (phase.pendingAmount || 0),
+  // Mark phases as modified
+  project.markModified('phases');
+
+  // Recalculate project totals from all phases
+  let totalPrice = 0;
+  let totalProjectPendingAmount = 0;
+  
+  for (const phase of project.phases) {
+    totalPrice += phase.totalAmount || 0;
+    totalProjectPendingAmount += phase.pendingAmount || 0;
+  }
+
+  // Update project totals
+  project.price = totalPrice;
+  project.pendingAmount = totalProjectPendingAmount;
+
+  // Save the project
+  await project.save();
+  
+  // Return the updated phase
+  return project.phases[phaseIndex];
+};
+
+// Add a single installment to a phase
+const addInstallment = async (
+  projectId: string,
+  phaseId: string,
+  installmentData: TInstallment
+) => {
+  const project = await Project.findById(projectId);
+  if (!project) {
+    throw new AppError(httpStatus.NOT_FOUND, "Project not found");
+  }
+
+  // Find phase by _id
+  const phaseIndex = project.phases.findIndex(
+    (phase) => phase._id?.toString() === phaseId
+  );
+
+  if (phaseIndex === -1) {
+    throw new AppError(httpStatus.NOT_FOUND, "Phase not found");
+  }
+
+  // Get the current phase
+  const currentPhase = project.phases[phaseIndex];
+  
+  // Initialize installments array if it doesn't exist
+  if (!currentPhase.installments) {
+    currentPhase.installments = [];
+  }
+  
+  // Add the new installment
+  currentPhase.installments.push(installmentData);
+  
+  // Recalculate phase pending amount based on ALL installments
+  const totalPaid = (currentPhase.installments || []).reduce(
+    (sum: number, inst: TInstallment) => sum + (inst.amount || 0),
     0
   );
-  project.pendingAmount = totalPhasePending;
+  
+  currentPhase.pendingAmount = currentPhase.totalAmount - totalPaid;
+  currentPhase.paymentStatus = currentPhase.pendingAmount <= 0 ? "Paid" : "Pending";
 
+  // Mark phases as modified
+  project.markModified('phases');
+
+  // Recalculate project totals from all phases
+  let totalPrice = 0;
+  let totalProjectPendingAmount = 0;
+  
+  for (const phase of project.phases) {
+    totalPrice += phase.totalAmount || 0;
+    totalProjectPendingAmount += phase.pendingAmount || 0;
+  }
+
+  // Update project totals
+  project.price = totalPrice;
+  project.pendingAmount = totalProjectPendingAmount;
+
+  // Save the project
   await project.save();
+  
+  // Return the updated phase
+  return project.phases[phaseIndex];
+};
+
+// Update a specific installment in a phase
+const updateInstallment = async (
+  projectId: string,
+  phaseId: string,
+  installmentId: string,
+  installmentData: Partial<TInstallment>
+) => {
+  const project = await Project.findById(projectId);
+  if (!project) {
+    throw new AppError(httpStatus.NOT_FOUND, "Project not found");
+  }
+
+  // Find phase by _id
+  const phaseIndex = project.phases.findIndex(
+    (phase) => phase._id?.toString() === phaseId
+  );
+
+  if (phaseIndex === -1) {
+    throw new AppError(httpStatus.NOT_FOUND, "Phase not found");
+  }
+
+  // Get the current phase
+  const currentPhase = project.phases[phaseIndex];
+  
+  // Find the installment by _id
+  const installmentIndex = currentPhase.installments.findIndex(
+    (inst: any) => inst._id?.toString() === installmentId
+  );
+
+  if (installmentIndex === -1) {
+    throw new AppError(httpStatus.NOT_FOUND, "Installment not found");
+  }
+  
+  // Update the installment
+  currentPhase.installments[installmentIndex] = {
+    ...currentPhase.installments[installmentIndex],
+    ...installmentData,
+  };
+  
+  // Recalculate phase pending amount based on ALL installments
+  const totalPaid = (currentPhase.installments || []).reduce(
+    (sum: number, inst: TInstallment) => sum + (inst.amount || 0),
+    0
+  );
+  
+  currentPhase.pendingAmount = currentPhase.totalAmount - totalPaid;
+  currentPhase.paymentStatus = currentPhase.pendingAmount <= 0 ? "Paid" : "Pending";
+
+  // Mark phases as modified
+  project.markModified('phases');
+
+  // Recalculate project totals from all phases
+  let totalPrice = 0;
+  let totalProjectPendingAmount = 0;
+  
+  for (const phase of project.phases) {
+    totalPrice += phase.totalAmount || 0;
+    totalProjectPendingAmount += phase.pendingAmount || 0;
+  }
+
+  // Update project totals
+  project.price = totalPrice;
+  project.pendingAmount = totalProjectPendingAmount;
+
+  // Save the project
+  await project.save();
+  
+  // Return the updated phase
   return project.phases[phaseIndex];
 };
 
@@ -261,12 +411,19 @@ const deletePhase = async (projectId: string, phaseId: string) => {
     project.onGoingPhase = nextPhase?.name || "";
   }
 
-  // Recalculate project pending amount
-  const totalPhasePending = project.phases.reduce(
+  // Recalculate project totals from remaining phases
+  const totalPrice = project.phases.reduce(
+    (sum, phase) => sum + (phase.totalAmount || 0),
+    0
+  );
+  
+  const totalPendingAmount = project.phases.reduce(
     (sum, phase) => sum + (phase.pendingAmount || 0),
     0
   );
-  project.pendingAmount = totalPhasePending;
+
+  project.price = totalPrice;
+  project.pendingAmount = totalPendingAmount;
 
   await project.save();
   return {
@@ -274,6 +431,7 @@ const deletePhase = async (projectId: string, phaseId: string) => {
     deletedPhase,
   };
 };
+
 
 // Get a single phase by phaseId
 const getSinglePhase = async (projectId: string, phaseId: string) => {
@@ -312,6 +470,8 @@ export const ProjectServices = {
   deleteProject,
   addPhase,
   updatePhase,
+  addInstallment,
+  updateInstallment,
   deletePhase,
   getSinglePhase,
   getAllPhases,
