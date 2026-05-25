@@ -1,3 +1,4 @@
+import { ObjectId } from "mongoose";
 
 export type TSocialMedia = {
   platform: string;
@@ -51,6 +52,8 @@ export type TLead = {
   // Additional Information
   leadSource?: string;
   notes?: string;
+
+  addedBy: ObjectId;
 
   // System fields
   createdAt?: Date;

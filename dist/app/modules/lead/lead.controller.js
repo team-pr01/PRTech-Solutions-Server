@@ -19,7 +19,8 @@ const http_status_1 = __importDefault(require("http-status"));
 const lead_services_1 = require("./lead.services");
 // Add Lead
 const addLead = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield lead_services_1.LeadServices.addLead(req.body);
+    const userId = req.user._id;
+    const result = yield lead_services_1.LeadServices.addLead(req.body, userId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.CREATED,
         success: true,
@@ -59,6 +60,32 @@ const getSingleLead = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
         statusCode: http_status_1.default.OK,
         success: true,
         message: "Lead retrieved successfully",
+        data: result,
+    });
+}));
+// Get my added leads
+const getMyAddedLeads = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user._id;
+    const { keyword, country, city, status, niche, subNiche, priority, discoveryCallScheduledDate, discoveryCallFrom, discoveryCallTo, followUpDate, followUpFrom, followUpTo, skip, limit, } = req.query;
+    const result = yield lead_services_1.LeadServices.getMyAddedLeads(userId, {
+        keyword: keyword,
+        country: country,
+        city: city,
+        status: status,
+        niche: niche,
+        subNiche: subNiche,
+        priority: priority,
+        discoveryCallScheduledDate: discoveryCallScheduledDate,
+        discoveryCallFrom: discoveryCallFrom,
+        discoveryCallTo: discoveryCallTo,
+        followUpDate: followUpDate,
+        followUpFrom: followUpFrom,
+        followUpTo: followUpTo,
+    }, skip ? parseInt(skip) : 0, limit ? parseInt(limit) : 10);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "My leads retrieved successfully",
         data: result,
     });
 }));
@@ -136,6 +163,7 @@ exports.LeadControllers = {
     addLead,
     getAllLeads,
     getSingleLead,
+    getMyAddedLeads,
     updateLead,
     addFollowUp,
     deleteFollowUp,

@@ -26,7 +26,7 @@ const generateFollowUpKey = (followUpCount) => {
     return `${followUpCount}${suffix} follow up`;
 };
 // Add Lead
-const addLead = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const addLead = (payload, userId) => __awaiter(void 0, void 0, void 0, function* () {
     const { businessName, businessContactNumber, } = payload;
     // Check if lead with same business name and contact number exists
     const existingLead = yield lead_model_1.default.findOne({
@@ -36,7 +36,7 @@ const addLead = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (existingLead) {
         throw new AppError_1.default(http_status_1.default.CONFLICT, "Lead with this business name and contact number already exists");
     }
-    const payloadData = Object.assign({}, payload);
+    const payloadData = Object.assign(Object.assign({}, payload), { addedBy: userId });
     const result = yield lead_model_1.default.create(payloadData);
     return result;
 });
@@ -127,6 +127,102 @@ const getSingleLead = (leadId) => __awaiter(void 0, void 0, void 0, function* ()
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Lead not found");
     }
     return result;
+});
+// Get single lead by id
+const getMyAddedLeads = (userId_1, ...args_1) => __awaiter(void 0, [userId_1, ...args_1], void 0, function* (userId, filters = {}, skip = 0, limit = 10) {
+    const query = { addedBy: userId };
+    // SEARCH (business name, owner name, email, contact number)
+    if (filters.keyword) {
+        query.$or = [
+            { businessName: { $regex: filters.keyword, $options: "i" } },
+            { ownerName: { $regex: filters.keyword, $options: "i" } },
+            { ownerEmail: { $regex: filters.keyword, $options: "i" } },
+            { businessContactNumber: { $regex: filters.keyword, $options: "i" } },
+            { ownerContactNumber: { $regex: filters.keyword, $options: "i" } },
+        ];
+    }
+    // COUNTRY FILTER
+    if (filters.country) {
+        query.country = { $regex: `^${filters.country.trim()}$`, $options: "i" };
+    }
+    // CITY FILTER
+    if (filters.city) {
+        query.city = { $regex: `^${filters.city.trim()}$`, $options: "i" };
+    }
+    // STATUS FILTER
+    if (filters.status) {
+        query.status = { $regex: `^${filters.status.trim()}$`, $options: "i" };
+    }
+    // NICHE FILTER
+    if (filters.niche) {
+        query.niche = { $regex: `^${filters.niche.trim()}$`, $options: "i" };
+    }
+    // SUB-NICHE FILTER
+    if (filters.subNiche) {
+        query.subNiche = { $regex: `^${filters.subNiche.trim()}$`, $options: "i" };
+    }
+    // PRIORITY FILTER
+    if (filters.priority) {
+        query.priority = parseInt(filters.priority);
+    }
+    // DISCOVERY CALL SCHEDULED DATE - SINGLE DATE
+    if (filters.discoveryCallScheduledDate) {
+        const date = new Date(filters.discoveryCallScheduledDate);
+        const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+        query.discoveryCallScheduledDate = {
+            $gte: startOfDay,
+            $lte: endOfDay,
+        };
+    }
+    // DISCOVERY CALL DATE RANGE
+    if (filters.discoveryCallFrom || filters.discoveryCallTo) {
+        query.discoveryCallScheduledDate = {};
+        if (filters.discoveryCallFrom) {
+            query.discoveryCallScheduledDate.$gte = new Date(filters.discoveryCallFrom);
+        }
+        if (filters.discoveryCallTo) {
+            query.discoveryCallScheduledDate.$lte = new Date(filters.discoveryCallTo);
+        }
+    }
+    // FOLLOW UP DATE FILTER (SINGLE DATE)
+    if (filters.followUpDate) {
+        const date = new Date(filters.followUpDate);
+        const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+        query["followUps.followUpDate"] = {
+            $gte: startOfDay,
+            $lte: endOfDay,
+        };
+    }
+    // FOLLOW UP DATE RANGE
+    if (filters.followUpFrom || filters.followUpTo) {
+        query["followUps.followUpDate"] = {};
+        if (filters.followUpFrom) {
+            query["followUps.followUpDate"].$gte = new Date(filters.followUpFrom);
+        }
+        if (filters.followUpTo) {
+            query["followUps.followUpDate"].$lte = new Date(filters.followUpTo);
+        }
+    }
+    // Get total count for this specific user with filters
+    const total = yield lead_model_1.default.countDocuments(query);
+    // Get paginated data
+    const leads = yield lead_model_1.default.find(query)
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 });
+    return {
+        data: leads,
+        meta: {
+            total,
+            filteredTotal: total,
+            skip,
+            limit,
+            totalPages: Math.ceil(total / limit),
+            hasMore: skip + limit < total,
+        },
+    };
 });
 // Update lead
 const updateLead = (leadId, payload) => __awaiter(void 0, void 0, void 0, function* () {
@@ -290,6 +386,7 @@ exports.LeadServices = {
     addLead,
     getAllLeads,
     getSingleLead,
+    getMyAddedLeads,
     updateLead,
     addFollowUp,
     deleteFollowUp,

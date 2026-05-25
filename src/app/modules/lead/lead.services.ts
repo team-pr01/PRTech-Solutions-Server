@@ -14,7 +14,7 @@ const generateFollowUpKey = (followUpCount: number): string => {
 };
 
 // Add Lead
-const addLead = async (payload: TLead) => {
+const addLead = async (payload: TLead, userId: string) => {
   const {
     businessName,
     businessContactNumber,
@@ -31,7 +31,8 @@ const addLead = async (payload: TLead) => {
   }
 
   const payloadData = {
-    ...payload
+    ...payload,
+    addedBy: userId
   };
 
   const result = await Lead.create(payloadData);
@@ -151,6 +152,124 @@ const getSingleLead = async (leadId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "Lead not found");
   }
   return result;
+};
+
+// Get single lead by id
+const getMyAddedLeads = async (
+  userId: string,
+  filters: any = {},
+  skip = 0,
+  limit = 10
+) => {
+  const query: any = { addedBy: userId };
+
+  // SEARCH (business name, owner name, email, contact number)
+  if (filters.keyword) {
+    query.$or = [
+      { businessName: { $regex: filters.keyword, $options: "i" } },
+      { ownerName: { $regex: filters.keyword, $options: "i" } },
+      { ownerEmail: { $regex: filters.keyword, $options: "i" } },
+      { businessContactNumber: { $regex: filters.keyword, $options: "i" } },
+      { ownerContactNumber: { $regex: filters.keyword, $options: "i" } },
+    ];
+  }
+
+  // COUNTRY FILTER
+  if (filters.country) {
+    query.country = { $regex: `^${filters.country.trim()}$`, $options: "i" };
+  }
+
+  // CITY FILTER
+  if (filters.city) {
+    query.city = { $regex: `^${filters.city.trim()}$`, $options: "i" };
+  }
+
+  // STATUS FILTER
+  if (filters.status) {
+    query.status = { $regex: `^${filters.status.trim()}$`, $options: "i" };
+  }
+
+  // NICHE FILTER
+  if (filters.niche) {
+    query.niche = { $regex: `^${filters.niche.trim()}$`, $options: "i" };
+  }
+
+  // SUB-NICHE FILTER
+  if (filters.subNiche) {
+    query.subNiche = { $regex: `^${filters.subNiche.trim()}$`, $options: "i" };
+  }
+
+  // PRIORITY FILTER
+  if (filters.priority) {
+    query.priority = parseInt(filters.priority);
+  }
+
+  // DISCOVERY CALL SCHEDULED DATE - SINGLE DATE
+  if (filters.discoveryCallScheduledDate) {
+    const date = new Date(filters.discoveryCallScheduledDate);
+    const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+
+    query.discoveryCallScheduledDate = {
+      $gte: startOfDay,
+      $lte: endOfDay,
+    };
+  }
+
+  // DISCOVERY CALL DATE RANGE
+  if (filters.discoveryCallFrom || filters.discoveryCallTo) {
+    query.discoveryCallScheduledDate = {};
+    if (filters.discoveryCallFrom) {
+      query.discoveryCallScheduledDate.$gte = new Date(filters.discoveryCallFrom);
+    }
+    if (filters.discoveryCallTo) {
+      query.discoveryCallScheduledDate.$lte = new Date(filters.discoveryCallTo);
+    }
+  }
+
+  // FOLLOW UP DATE FILTER (SINGLE DATE)
+  if (filters.followUpDate) {
+    const date = new Date(filters.followUpDate);
+    const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+
+    query["followUps.followUpDate"] = {
+      $gte: startOfDay,
+      $lte: endOfDay,
+    };
+  }
+
+  // FOLLOW UP DATE RANGE
+  if (filters.followUpFrom || filters.followUpTo) {
+    query["followUps.followUpDate"] = {};
+    if (filters.followUpFrom) {
+      query["followUps.followUpDate"].$gte = new Date(filters.followUpFrom);
+    }
+    if (filters.followUpTo) {
+      query["followUps.followUpDate"].$lte = new Date(filters.followUpTo);
+    }
+  }
+
+  // Get total count for this specific user with filters
+  const total = await Lead.countDocuments(query);
+  
+  // Get paginated data
+  const leads = await Lead.find(query)
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
+  return {
+    data: leads,
+    meta: {
+      total,
+      filteredTotal: total,
+      skip,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      hasMore: skip + limit < total,
+    },
+  };
 };
 
 // Update lead
@@ -356,6 +475,7 @@ export const LeadServices = {
   addLead,
   getAllLeads,
   getSingleLead,
+  getMyAddedLeads,
   updateLead,
   addFollowUp,
   deleteFollowUp,

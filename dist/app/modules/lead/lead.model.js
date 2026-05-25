@@ -116,6 +116,11 @@ const LeadSchema = new mongoose_1.Schema({
         type: String,
         trim: true
     },
+    addedBy: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
     // Additional Information
     leadSource: {
         type: String,

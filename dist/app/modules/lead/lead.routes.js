@@ -11,7 +11,8 @@ const auth_constants_1 = require("../auth/auth.constants");
 const router = express_1.default.Router();
 // Lead CRUD Operations
 router.post("/add", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), lead_controller_1.LeadControllers.addLead);
-router.get("/", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), lead_controller_1.LeadControllers.getAllLeads);
+router.get("/my-added-leads", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), lead_controller_1.LeadControllers.getMyAddedLeads);
+router.get("/", (0, auth_1.default)(auth_constants_1.UserRole.admin), lead_controller_1.LeadControllers.getAllLeads);
 router.get("/statistics", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), lead_controller_1.LeadControllers.getLeadStatistics);
 router.get("/:leadId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), lead_controller_1.LeadControllers.getSingleLead);
 router.put("/update/:leadId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), lead_controller_1.LeadControllers.updateLead);

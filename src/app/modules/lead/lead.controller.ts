@@ -5,7 +5,8 @@ import { LeadServices } from "./lead.services";
 
 // Add Lead
 const addLead = catchAsync(async (req, res) => {
-  const result = await LeadServices.addLead(req.body);
+  const userId =req.user._id
+  const result = await LeadServices.addLead(req.body, userId);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -70,6 +71,56 @@ const getSingleLead = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: "Lead retrieved successfully",
+    data: result,
+  });
+});
+
+// Get my added leads
+const getMyAddedLeads = catchAsync(async (req, res) => {
+  const userId = req.user._id;
+  const {
+    keyword,
+    country,
+    city,
+    status,
+    niche,
+    subNiche,
+    priority,
+    discoveryCallScheduledDate,
+    discoveryCallFrom,
+    discoveryCallTo,
+    followUpDate,
+    followUpFrom,
+    followUpTo,
+    skip,
+    limit,
+  } = req.query;
+
+  const result = await LeadServices.getMyAddedLeads(
+    userId,
+    {
+      keyword: keyword as string,
+      country: country as string,
+      city: city as string,
+      status: status as string,
+      niche: niche as string,
+      subNiche: subNiche as string,
+      priority: priority as string,
+      discoveryCallScheduledDate: discoveryCallScheduledDate as string,
+      discoveryCallFrom: discoveryCallFrom as string,
+      discoveryCallTo: discoveryCallTo as string,
+      followUpDate: followUpDate as string,
+      followUpFrom: followUpFrom as string,
+      followUpTo: followUpTo as string,
+    },
+    skip ? parseInt(skip as string) : 0,
+    limit ? parseInt(limit as string) : 10
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "My leads retrieved successfully",
     data: result,
   });
 });
@@ -163,6 +214,7 @@ export const LeadControllers = {
   addLead,
   getAllLeads,
   getSingleLead,
+  getMyAddedLeads,
   updateLead,
   addFollowUp,
   deleteFollowUp,

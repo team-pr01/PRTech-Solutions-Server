@@ -133,6 +133,12 @@ const LeadSchema = new Schema<TLead>(
       trim: true
     },
 
+    addedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
+
     // Additional Information
     leadSource: {
       type: String,

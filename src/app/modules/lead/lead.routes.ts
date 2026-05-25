@@ -13,8 +13,14 @@ router.post(
 );
 
 router.get(
-  "/",
+  "/my-added-leads",
   auth(UserRole.admin, UserRole.staff),
+  LeadControllers.getMyAddedLeads
+);
+
+router.get(
+  "/",
+  auth(UserRole.admin),
   LeadControllers.getAllLeads
 );
 
