@@ -10,6 +10,7 @@ const lead_routes_1 = require("../modules/lead/lead.routes");
 const categories_route_1 = require("../modules/categories/categories.route");
 const accounts_route_1 = require("../modules/accounts/accounts.route");
 const staff_route_1 = require("../modules/staff/staff.route");
+const niche_routes_1 = require("../modules/niche/niche.routes");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -47,6 +48,10 @@ const moduleRoutes = [
     {
         path: "/staff",
         route: staff_route_1.StaffRoutes,
+    },
+    {
+        path: "/niche",
+        route: niche_routes_1.NicheRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

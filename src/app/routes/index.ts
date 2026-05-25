@@ -8,6 +8,7 @@ import { LeadRoutes } from "../modules/lead/lead.routes";
 import { CategoryRoutes } from "../modules/categories/categories.route";
 import { AccountRoutes } from "../modules/accounts/accounts.route";
 import { StaffRoutes } from "../modules/staff/staff.route";
+import { NicheRoutes } from "../modules/niche/niche.routes";
 
 const router = Router();
 
@@ -47,6 +48,10 @@ const moduleRoutes = [
   {
     path: "/staff",
     route: StaffRoutes,
+  },
+  {
+    path: "/niche",
+    route: NicheRoutes,
   },
 ];
 

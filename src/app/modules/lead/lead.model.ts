@@ -24,96 +24,102 @@ const FollowUpSchema = new Schema<TFollowUp>(
 const LeadSchema = new Schema<TLead>(
   {
     // Basic Information
-    businessName: { 
-      type: String, 
-      required: true, 
-      trim: true, 
-      index: true 
+    businessName: {
+      type: String,
+      required: true,
+      trim: true,
+      index: true
     },
-    businessContactNumber: { 
-      type: String, 
-      required: true, 
-      trim: true 
+    businessContactNumber: {
+      type: String,
+      required: true,
+      trim: true
     },
-    country: { 
-      type: String, 
-      required: true, 
-      trim: true, 
-      index: true 
+    country: {
+      type: String,
+      required: true,
+      trim: true,
+      index: true
     },
     city: {
-      type: String, 
-      required: true,
-      trim: true, 
-      index: true 
-    },
-    address: { 
-      type: String, 
-      trim: true 
-    },
-    
-    // Owner Information
-    ownerName: { 
       type: String,
-      trim: true 
+      required: true,
+      trim: true,
+      index: true
     },
-    ownerContactNumber: { 
-      type: String, 
-      trim: true 
+    address: {
+      type: String,
+      trim: true
     },
-    isWhatsapp: { 
-      type: Boolean, 
-      default: false 
+
+    // Owner Information
+    ownerName: {
+      type: String,
+      trim: true
     },
-    ownerEmail: { 
-      type: String, 
-      lowercase: true, 
-      trim: true 
+    ownerContactNumber: {
+      type: String,
+      trim: true
     },
-    
+    isWhatsapp: {
+      type: Boolean,
+      default: false
+    },
+    ownerEmail: {
+      type: String,
+      lowercase: true,
+      trim: true
+    },
+
     // Social Media & Online Presence
     socialMedia: [SocialMediaSchema],
-    website: { 
-      type: String, 
-      trim: true 
+    website: {
+      type: String,
+      trim: true
     },
-    
+
     // Lead Details
-    issueFound: { 
+    issueFound: {
       type: String,
       required: true,
-      trim: true 
+      trim: true
     },
-    priority: { 
+    priority: {
       type: Number,
-      min: 1, 
+      min: 1,
       max: 5,
-      index: true 
+      index: true
     },
-    category: { 
-      type: String, 
-      required: true, 
-      trim: true, 
-      index: true 
+    niche: {
+      type: String,
+      required: true,
+      trim: true,
+      index: true
     },
-    
+
+    subNiche: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+
     // Discovery Call
-    discoveryCallScheduledDate: { 
-      type: Date, 
-      index: true 
+    discoveryCallScheduledDate: {
+      type: Date,
+      index: true
     },
-    discoveryCallScheduledTime: { 
-      type: String, 
-      trim: true 
+    discoveryCallScheduledTime: {
+      type: String,
+      trim: true
     },
-    discoveryCallNotes: { 
-      type: String, 
-      trim: true 
+    discoveryCallNotes: {
+      type: String,
+      trim: true
     },
-    
+
     // Follow Ups
     followUps: [FollowUpSchema],
-    
+
     // Status & Tracking
     status: {
       type: String,
@@ -122,19 +128,19 @@ const LeadSchema = new Schema<TLead>(
       default: "Pending",
       index: true,
     },
-    nextAction: { 
-      type: String, 
-      trim: true 
+    nextAction: {
+      type: String,
+      trim: true
     },
-    
+
     // Additional Information
-    leadSource: { 
-      type: String, 
-      trim: true 
+    leadSource: {
+      type: String,
+      trim: true
     },
-    notes: { 
-      type: String, 
-      trim: true 
+    notes: {
+      type: String,
+      trim: true
     },
   },
   {

@@ -29,13 +29,14 @@ const addLead = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0
 }));
 // Get All Leads
 const getAllLeads = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { keyword, country, city, status, category, priority, leadSource, discoveryCallScheduledDate, followUpDate, assignedTo, convertedToClient, skip, limit, } = req.query;
+    const { keyword, country, city, status, niche, subNiche, priority, leadSource, discoveryCallScheduledDate, followUpDate, assignedTo, convertedToClient, skip, limit, } = req.query;
     const result = yield lead_services_1.LeadServices.getAllLeads({
         keyword: keyword,
         country: country,
         city: city,
         status: status,
-        category: category,
+        niche: niche,
+        subNiche: subNiche,
         priority: priority,
         leadSource: leadSource,
         discoveryCallScheduledDate: discoveryCallScheduledDate,

@@ -33,7 +33,8 @@ export type TLead = {
   // Lead Details
   issueFound?: string;
   priority: number;
-  category: string;
+  niche: string;
+  subNiche: string;
 
   // Discovery Call
   discoveryCallScheduledDate?: Date;

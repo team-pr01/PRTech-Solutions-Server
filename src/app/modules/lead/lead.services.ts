@@ -72,9 +72,14 @@ const getAllLeads = async (
     query.status = { $regex: `^${filters.status.trim()}$`, $options: "i" };
   }
 
-  // CATEGORY FILTER
-  if (filters.category) {
-    query.category = { $regex: `^${filters.category.trim()}$`, $options: "i" };
+  // NICHE FILTER
+  if (filters.niche) {
+    query.niche = { $regex: `^${filters.niche.trim()}$`, $options: "i" };
+  }
+
+  // SUB-NICHE FILTER
+  if (filters.subNiche) {
+    query.subNiche = { $regex: `^${filters.subNiche.trim()}$`, $options: "i" };
   }
 
   // PRIORITY FILTER (Fix for number priority)
