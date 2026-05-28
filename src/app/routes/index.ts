@@ -9,6 +9,8 @@ import { CategoryRoutes } from "../modules/categories/categories.route";
 import { AccountRoutes } from "../modules/accounts/accounts.route";
 import { StaffRoutes } from "../modules/staff/staff.route";
 import { NicheRoutes } from "../modules/niche/niche.routes";
+import { QueryRoutes } from "../modules/query/query.routes";
+import { IssueRoutes } from "../modules/issue/issue.routes";
 
 const router = Router();
 
@@ -52,6 +54,14 @@ const moduleRoutes = [
   {
     path: "/niche",
     route: NicheRoutes,
+  },
+  {
+    path: "/query",
+    route: QueryRoutes,
+  },
+  {
+    path: "/issue",
+    route: IssueRoutes,
   },
 ];
 

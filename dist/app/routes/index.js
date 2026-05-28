@@ -11,6 +11,8 @@ const categories_route_1 = require("../modules/categories/categories.route");
 const accounts_route_1 = require("../modules/accounts/accounts.route");
 const staff_route_1 = require("../modules/staff/staff.route");
 const niche_routes_1 = require("../modules/niche/niche.routes");
+const query_routes_1 = require("../modules/query/query.routes");
+const issue_routes_1 = require("../modules/issue/issue.routes");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -52,6 +54,14 @@ const moduleRoutes = [
     {
         path: "/niche",
         route: niche_routes_1.NicheRoutes,
+    },
+    {
+        path: "/query",
+        route: query_routes_1.QueryRoutes,
+    },
+    {
+        path: "/issue",
+        route: issue_routes_1.IssueRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
