@@ -87,6 +87,14 @@ router.post(
   ProjectControllers.addExpenditure
 );
 
+// Add phase to expenditure
+router.post(
+  "/:projectId/expenditure/:expenditureId/phases/add",
+  auth(UserRole.admin, UserRole.staff),
+  ProjectControllers.addPhaseToExpenditure
+);
+
+
 router.delete(
   "/phases/delete/:projectId/:phaseId",
   auth(UserRole.admin, UserRole.staff),

@@ -25,8 +25,13 @@ export type TExpenditure = {
   description: string;
   totalAmount: number;
   pendingAmount: number;
-  date: Date;
-  paymentMethod : string;
+  phases: {
+    title: string;
+    paidAmount: number;
+    date: Date;
+    paymentMethod: string;
+    currency: string;
+  }[];
 };
 
 export type TProject = {
@@ -46,7 +51,7 @@ export type TProject = {
   expenditures: TExpenditure[];
   notes?: string;
   projectLinks?: string[];
-  
+
   // Client reference
   clientId: Types.ObjectId | string;
 

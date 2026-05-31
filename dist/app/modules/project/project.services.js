@@ -330,25 +330,66 @@ const getAllPhases = (projectId) => __awaiter(void 0, void 0, void 0, function* 
     return project.phases || [];
 });
 const addExpenditure = (projectId, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(payload);
     const project = yield project_model_1.default.findById(projectId);
     if (!project) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Project not found");
     }
-    project.expenditures.push(payload);
-    yield project.save();
-    const account = yield accounts_model_1.default.create({
+    // Initialize expenditures array if it doesn't exist
+    if (!project.expenditures) {
+        project.expenditures = [];
+    }
+    const payloadData = Object.assign(Object.assign({}, payload), { pendingAmount: payload.totalAmount });
+    // Add expenditure to project
+    project.expenditures.push(payloadData);
+    // Mark expenditures as modified to save only this change
+    project.markModified('expenditures');
+    // Save with validation turned off for other fields or use validateModifiedOnly
+    yield project.save({ validateModifiedOnly: true });
+    return project;
+});
+// Add phase to expenditure
+const addPhaseToExpenditure = (projectId, expenditureId, phaseData) => __awaiter(void 0, void 0, void 0, function* () {
+    const project = yield project_model_1.default.findById(projectId);
+    if (!project) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Project not found");
+    }
+    // Find the expenditure
+    const expenditureIndex = project.expenditures.findIndex((exp) => { var _a; return ((_a = exp._id) === null || _a === void 0 ? void 0 : _a.toString()) === expenditureId; });
+    if (expenditureIndex === -1) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Expenditure not found");
+    }
+    // Initialize phases array if it doesn't exist
+    if (!project.expenditures[expenditureIndex].phases) {
+        project.expenditures[expenditureIndex].phases = [];
+    }
+    // Add the new phase
+    project.expenditures[expenditureIndex].phases.push(phaseData);
+    // Recalculate expenditure totals from phases
+    const expenditure = project.expenditures[expenditureIndex];
+    const totalPaid = expenditure.phases.reduce((sum, phase) => sum + (phase.paidAmount || 0), 0);
+    expenditure.pendingAmount = Math.max(0, expenditure.totalAmount - totalPaid);
+    // Mark as modified
+    project.markModified('expenditures');
+    // Save with validateModifiedOnly to skip validation on unchanged fields
+    yield project.save({ validateModifiedOnly: true });
+    // Create account entry for this phase
+    yield accounts_model_1.default.create({
         type: "expense",
         expenseType: "project",
-        currency: payload.currency,
-        description: payload.description,
-        totalAmount: payload.totalAmount,
-        pendingAmount: payload.pendingAmount,
-        paidAmount: payload.paidAmount,
-        date: payload.date,
-        paymentMethod: payload.paymentMethod
+        currency: phaseData.currency,
+        description: `${expenditure.description} - ${phaseData.title}`,
+        totalAmount: phaseData.paidAmount,
+        pendingAmount: 0,
+        paidAmount: phaseData.paidAmount,
+        date: phaseData.date,
+        paymentMethod: phaseData.paymentMethod,
+        projectId: project._id,
+        clientId: project.clientId,
+        reference: `Expenditure Phase: ${phaseData.title}`
     });
-    return account;
+    return {
+        expenditure: project.expenditures[expenditureIndex]
+    };
 });
 exports.ProjectServices = {
     addProject,
@@ -364,4 +405,5 @@ exports.ProjectServices = {
     getSinglePhase,
     getAllPhases,
     addExpenditure,
+    addPhaseToExpenditure
 };

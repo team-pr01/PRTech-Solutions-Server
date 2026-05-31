@@ -189,6 +189,23 @@ const addExpenditure = catchAsync(async (req, res) => {
   });
 });
 
+// Add phase to expenditure
+const addPhaseToExpenditure = catchAsync(async (req, res) => {
+  const { projectId, expenditureId } = req.params;
+  const result = await ProjectServices.addPhaseToExpenditure(
+    projectId,
+    expenditureId,
+    req.body
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "Phase added to expenditure successfully",
+    data: result,
+  });
+});
+
 export const ProjectControllers = {
   addProject,
   getAllProjects,
@@ -203,4 +220,5 @@ export const ProjectControllers = {
   getSinglePhase,
   getAllPhases,
   addExpenditure,
+  addPhaseToExpenditure
 };

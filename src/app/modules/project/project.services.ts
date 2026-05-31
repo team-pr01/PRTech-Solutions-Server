@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
-import { TInstallment, TPhase, TProject } from "./project.interface";
+import { TExpenditure, TInstallment, TPhase, TProject } from "./project.interface";
 import Project from "./project.model";
 import { infinitePaginate } from "../../utils/infinitePaginate";
 import Client from "../client/client.model";
@@ -460,38 +460,106 @@ const getAllPhases = async (projectId: string) => {
   return project.phases || [];
 };
 
-type TExpenditure = {
-  description: string;
-  totalAmount: number;
-  pendingAmount: number;
-  date: Date;
-  currency: string;
-  paymentMethod : string;
-  paidAmount: number
-};
-
 const addExpenditure = async (projectId: string, payload: TExpenditure) => {
-  console.log(payload);
+  
   const project = await Project.findById(projectId);
   if (!project) {
     throw new AppError(httpStatus.NOT_FOUND, "Project not found");
   }
 
-  project.expenditures.push(payload);
-  await project.save();
+  // Initialize expenditures array if it doesn't exist
+  if (!project.expenditures) {
+    project.expenditures = [];
+  }
 
-  const account = await Accounts.create({
+  const payloadData = {
+    ...payload,
+    pendingAmount: payload.totalAmount,
+  }
+
+  // Add expenditure to project
+  project.expenditures.push(payloadData);
+  
+  // Mark expenditures as modified to save only this change
+  project.markModified('expenditures');
+  
+  // Save with validation turned off for other fields or use validateModifiedOnly
+  await project.save({ validateModifiedOnly: true });
+
+  return project;
+};
+
+// Add phase to expenditure
+const addPhaseToExpenditure = async (
+  projectId: string,
+  expenditureId: string,
+  phaseData: {
+    title: string;
+    paidAmount: number;
+    date: Date;
+    paymentMethod: string;
+    currency: string;
+  }
+) => {
+  const project = await Project.findById(projectId);
+  if (!project) {
+    throw new AppError(httpStatus.NOT_FOUND, "Project not found");
+  }
+
+  // Find the expenditure
+  const expenditureIndex = project.expenditures.findIndex(
+    (exp: any) => exp._id?.toString() === expenditureId
+  );
+
+  if (expenditureIndex === -1) {
+    throw new AppError(httpStatus.NOT_FOUND, "Expenditure not found");
+  }
+
+  // Initialize phases array if it doesn't exist
+  if (!project.expenditures[expenditureIndex].phases) {
+    project.expenditures[expenditureIndex].phases = [];
+  }
+
+  // Add the new phase
+  project.expenditures[expenditureIndex].phases.push(phaseData);
+
+  // Recalculate expenditure totals from phases
+  const expenditure = project.expenditures[expenditureIndex];
+const totalPaid = expenditure.phases.reduce(
+  (sum: number, phase: any) => sum + (phase.paidAmount || 0),
+  0
+);
+
+expenditure.pendingAmount = Math.max(
+  0,
+  expenditure.totalAmount - totalPaid
+);
+
+  // Mark as modified
+  project.markModified('expenditures');
+
+  // Save with validateModifiedOnly to skip validation on unchanged fields
+  await project.save({ validateModifiedOnly: true });
+
+  // Create account entry for this phase
+  await Accounts.create({
     type: "expense",
     expenseType: "project",
-    currency: payload.currency,
-    description: payload.description,
-    totalAmount: payload.totalAmount,
-    pendingAmount: payload.pendingAmount,
-    paidAmount : payload.paidAmount,
-    date: payload.date,
-    paymentMethod: payload.paymentMethod
-  })
-  return account;
+    currency: phaseData.currency,
+    description: `${expenditure.description} - ${phaseData.title}`,
+    totalAmount: phaseData.paidAmount,
+    pendingAmount: 0,
+    paidAmount: phaseData.paidAmount,
+    date: phaseData.date,
+    paymentMethod: phaseData.paymentMethod,
+    projectId: project._id,
+    clientId: project.clientId,
+    reference: `Expenditure Phase: ${phaseData.title}`
+  });
+
+  return {
+    expenditure: project.expenditures[expenditureIndex]
+  };
 };
 
 export const ProjectServices = {
@@ -508,4 +576,5 @@ export const ProjectServices = {
   getSinglePhase,
   getAllPhases,
   addExpenditure,
+  addPhaseToExpenditure
 };
