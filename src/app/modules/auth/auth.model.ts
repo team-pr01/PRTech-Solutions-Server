@@ -35,6 +35,11 @@ const userSchema = new Schema<TUser, UserModel>(
       trim: true,
       lowercase: true,
     },
+    countryCode: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     phoneNumber: {
       type: String,
       required: true,
@@ -56,7 +61,7 @@ const userSchema = new Schema<TUser, UserModel>(
     },
     role: {
       type: String,
-      enum: ["user", "admin", "staff"],
+      enum: ["user", "admin", "staff", "client"],
       default: "user",
     },
 

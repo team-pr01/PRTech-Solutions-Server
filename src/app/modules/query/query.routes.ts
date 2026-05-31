@@ -8,7 +8,7 @@ const router = express.Router();
 // Public routes (with authentication)
 router.post(
   "/raise",
-  auth(UserRole.admin, UserRole.staff, UserRole.user),
+  auth(UserRole.admin, UserRole.staff, UserRole.user, UserRole.client),
   QueryController.raiseQuery
 );
 
@@ -20,7 +20,7 @@ router.get(
 
 router.get(
   "/my-queries",
-  auth(UserRole.user, UserRole.admin),
+  auth(UserRole.user, UserRole.admin, UserRole.client),
   QueryController.getMyQueries
 );
 

@@ -41,13 +41,6 @@ const ExpenditureSchema = new mongoose_1.Schema({
     date: { type: Date },
     paymentMethod: { type: String },
 }, { _id: true });
-// Contact Person Schema
-const ContactPersonSchema = new mongoose_1.Schema({
-    name: { type: String, required: true, trim: true },
-    countryCode: { type: String, required: true, trim: true },
-    phoneNumber: { type: String, required: true, trim: true },
-    isPrimary: { type: Boolean, default: false },
-}, { _id: true });
 // Main Project Schema
 const ProjectSchema = new mongoose_1.Schema({
     name: { type: String, required: true, trim: true, index: true },
@@ -78,7 +71,6 @@ const ProjectSchema = new mongoose_1.Schema({
     onGoingPhase: { type: String, trim: true },
     timelineLink: { type: String, trim: true },
     expenditures: [ExpenditureSchema],
-    contactPerson: [ContactPersonSchema],
     notes: { type: String, trim: true },
     projectLinks: [{ type: String, trim: true }],
     clientId: { type: mongoose_1.Schema.Types.ObjectId, required: true, ref: "Client", index: true },
@@ -91,14 +83,11 @@ ProjectSchema.index({ clientId: 1, createdAt: -1 });
 ProjectSchema.index({ startDate: 1, endDate: 1 });
 // Pre-save middleware to calculate project pending amount from phases
 ProjectSchema.pre("save", function (next) {
-    // Calculate total pending amount from all phases
     if (this.phases && this.phases.length > 0) {
-        const totalPhasePending = this.phases.reduce((sum, phase) => sum + (phase.pendingAmount || 0), 0);
-        this.pendingAmount = totalPhasePending;
+        this.pendingAmount = this.phases.reduce((sum, phase) => sum + (phase.pendingAmount || 0), 0);
     }
-    // If pendingAmount is not set from phases, use the provided value
-    if (!this.pendingAmount && this.price) {
-        this.pendingAmount = this.price;
+    else {
+        this.pendingAmount = this.price || 0;
     }
     next();
 });

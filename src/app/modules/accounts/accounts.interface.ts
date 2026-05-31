@@ -1,6 +1,6 @@
 export type TAccounts = {
     type: "earning" | "expense";
-    expenseType: "salary" | "ui/ux" | "tools" | "graphics" | "deployment" | "project" | "other";
+    expenseType: "salary" | "ui/ux" | "tools" | "graphics" | "deployment" | "project" | "client" | "other";
     description: string;
     currency: string;
     paidAmount?: number;

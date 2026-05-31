@@ -9,6 +9,14 @@ export type TSubordinate = {
   notes?: string;
 };
 
+export type TGift = {
+  title: string;
+  sentDate: Date;
+  currency: string;
+  totalAmount: number;
+  paymentMethod: string;
+}
+
 export type TClient = {
   // Personal Details
   clientId: string;
@@ -45,6 +53,7 @@ export type TClient = {
   // Additional Details
   source: string;
   notes?: string;
+  gifts?: TGift[];
 
   // Business Details
   industry?: string;

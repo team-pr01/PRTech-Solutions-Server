@@ -18,6 +18,12 @@ router.get(
 );
 
 router.get(
+  "/subordinates/:clientId",
+  auth(UserRole.admin, UserRole.staff),
+  ClientControllers.getSubordinatesByClientId
+);
+
+router.get(
   "/:clientId",
   auth(UserRole.admin, UserRole.staff),
   ClientControllers.getSingleClient
@@ -33,6 +39,13 @@ router.delete(
   "/delete/:clientId",
   auth(UserRole.admin, UserRole.staff),
   ClientControllers.deleteClient
+);
+
+// Add gift to client
+router.post(
+  "/gifts/add/:clientId",
+  auth(UserRole.admin, UserRole.staff),
+  ClientControllers.addGift
 );
 
 // Subordinate Routes

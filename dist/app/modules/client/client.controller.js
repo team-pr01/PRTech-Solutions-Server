@@ -111,6 +111,28 @@ const deleteSubordinate = (0, catchAsync_1.default)((req, res) => __awaiter(void
         data: result,
     });
 }));
+// Get subordinates by client ID
+const getSubordinatesByClientId = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { clientId } = req.params;
+    const result = yield client_services_1.ClientServices.getSubordinatesByClientId(clientId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Subordinates retrieved successfully",
+        data: result,
+    });
+}));
+// Add gift to client
+const addGift = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { clientId } = req.params;
+    const result = yield client_services_1.ClientServices.addGift(clientId, req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.CREATED,
+        success: true,
+        message: "Gift added successfully",
+        data: result,
+    });
+}));
 exports.ClientControllers = {
     addClient,
     getAllClients,
@@ -120,4 +142,6 @@ exports.ClientControllers = {
     addSubordinate,
     updateSubordinate,
     deleteSubordinate,
+    getSubordinatesByClientId,
+    addGift,
 };

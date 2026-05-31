@@ -12,7 +12,7 @@ const AccountsSchema = new Schema<TAccounts>(
     },
     expenseType: {
       type: String,
-      enum: ["salary", "ui/ux", "tools", "graphics", "deployment", "project", "other"],
+      enum: ["salary", "ui/ux", "tools", "graphics", "deployment", "project", "client", "other"],
       required: function(this: TAccounts) {
         return this.type === "expense";
       },

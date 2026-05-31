@@ -11,7 +11,7 @@ const AccountsSchema = new mongoose_1.Schema({
     },
     expenseType: {
         type: String,
-        enum: ["salary", "ui/ux", "tools", "graphics", "deployment", "project", "other"],
+        enum: ["salary", "ui/ux", "tools", "graphics", "deployment", "project", "client", "other"],
         required: function () {
             return this.type === "expense";
         },

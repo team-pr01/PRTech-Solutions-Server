@@ -5,4 +5,5 @@ exports.UserRole = {
     user: 'user',
     admin: 'admin',
     staff: 'staff',
+    client: 'client'
 };

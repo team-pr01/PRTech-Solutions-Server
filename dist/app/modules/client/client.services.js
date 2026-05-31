@@ -19,6 +19,8 @@ const AppError_1 = __importDefault(require("../../errors/AppError"));
 const client_model_1 = __importDefault(require("./client.model"));
 const generateUniqueClientId_1 = require("../../utils/generateUniqueClientId");
 const infinitePaginate_1 = require("../../utils/infinitePaginate");
+const auth_service_1 = require("../auth/auth.service");
+const accounts_model_1 = __importDefault(require("../accounts/accounts.model"));
 // Add client
 const addClient = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, emails, phoneNumbers, country, source } = payload;
@@ -39,6 +41,7 @@ const addClient = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         emails,
         phoneNumbers,
         country,
+        countryCode: phoneNumbers[0].countryCode,
         source,
         socialMedia: payload.socialMedia,
         preferredContactMethod: payload.preferredContactMethod,
@@ -51,6 +54,15 @@ const addClient = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         subordinates: payload.subordinates || [],
     };
     const result = yield client_model_1.default.create(payloadData);
+    const signupPayload = {
+        name,
+        email: emails[0].email,
+        countryCode: phoneNumbers[0].countryCode,
+        phoneNumber: phoneNumbers[0].phoneNumber,
+        role: "client",
+        password: payload.password,
+    };
+    yield auth_service_1.AuthServices.signup(signupPayload);
     return result;
 });
 // Get all clients with filtering and pagination
@@ -186,6 +198,42 @@ const deleteClient = (clientId) => __awaiter(void 0, void 0, void 0, function* (
     const result = yield client_model_1.default.findByIdAndDelete(clientId);
     return result;
 });
+// Get subordinates by client ID
+const getSubordinatesByClientId = (clientId) => __awaiter(void 0, void 0, void 0, function* () {
+    const client = yield client_model_1.default.findById(clientId);
+    if (!client) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Client not found");
+    }
+    return client.subordinates || [];
+});
+// Add gift to client
+const addGift = (clientId, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const client = yield client_model_1.default.findById(clientId);
+    if (!client) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Client not found");
+    }
+    // Initialize gifts array if it doesn't exist
+    if (!client.gifts) {
+        client.gifts = [];
+    }
+    // Add the new gift
+    client.gifts.push(payload);
+    yield client.save();
+    // Return the newly added gift
+    const addedGift = client.gifts[client.gifts.length - 1];
+    yield accounts_model_1.default.create({
+        type: "expense",
+        expenseType: "client",
+        currency: payload.currency,
+        description: `Gift Purpose (${client.name}) - ${payload.title}`,
+        totalAmount: payload.totalAmount,
+        pendingAmount: 0,
+        paidAmount: payload.totalAmount,
+        date: payload.sentDate,
+        paymentMethod: payload.paymentMethod
+    });
+    return addedGift;
+});
 exports.ClientServices = {
     addClient,
     getAllClients,
@@ -196,4 +244,6 @@ exports.ClientServices = {
     addSubordinate,
     updateSubordinate,
     deleteSubordinate,
+    getSubordinatesByClientId,
+    addGift,
 };

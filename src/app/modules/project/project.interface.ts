@@ -29,13 +29,6 @@ export type TExpenditure = {
   paymentMethod : string;
 };
 
-export type TContactPerson = {
-  name: string;
-  countryCode: string;
-  phoneNumber: string;
-  isPrimary?: boolean;
-};
-
 export type TProject = {
   name: string;
   projectType: string;
@@ -51,7 +44,6 @@ export type TProject = {
   onGoingPhase?: string;
   timelineLink?: string;
   expenditures: TExpenditure[];
-  contactPerson: TContactPerson[];
   notes?: string;
   projectLinks?: string[];
   

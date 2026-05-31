@@ -59,6 +59,14 @@ const ClientSchema = new mongoose_1.Schema({
     // Additional Details
     source: { type: String, required: true, trim: true },
     notes: { type: String, trim: true },
+    gifts: [
+        {
+            title: { type: String, trim: true },
+            sentDate: { type: Date, trim: true },
+            currency: { type: String, trim: true },
+            totalAmount: { type: Number, trim: true },
+        }
+    ],
     // Business Details
     industry: { type: String, trim: true },
     companySize: {

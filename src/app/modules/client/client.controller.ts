@@ -114,6 +114,32 @@ const deleteSubordinate = catchAsync(async (req, res) => {
   });
 });
 
+// Get subordinates by client ID
+const getSubordinatesByClientId = catchAsync(async (req, res) => {
+  const { clientId } = req.params;
+  const result = await ClientServices.getSubordinatesByClientId(clientId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Subordinates retrieved successfully",
+    data: result,
+  });
+});
+
+// Add gift to client
+const addGift = catchAsync(async (req, res) => {
+  const { clientId } = req.params;
+  const result = await ClientServices.addGift(clientId, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "Gift added successfully",
+    data: result,
+  });
+});
+
 export const ClientControllers = {
   addClient,
   getAllClients,
@@ -123,4 +149,6 @@ export const ClientControllers = {
   addSubordinate,
   updateSubordinate,
   deleteSubordinate,
+  getSubordinatesByClientId,
+  addGift,
 };

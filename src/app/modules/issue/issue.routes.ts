@@ -9,7 +9,7 @@ const router = express.Router();
 // Raise a new issue (with image upload - max 4 images)
 router.post(
   "/raise",
-  auth(UserRole.admin, UserRole.staff, UserRole.user),
+  auth(UserRole.admin, UserRole.staff, UserRole.user, UserRole.client),
   multerUpload.array("files", 4),
   IssueController.raiseIssue
 );
@@ -31,14 +31,14 @@ router.get(
 // Get my raised issues
 router.get(
   "/my-issues",
-  auth(UserRole.admin, UserRole.staff, UserRole.user),
+  auth(UserRole.admin, UserRole.staff, UserRole.user, UserRole.client),
   IssueController.getMyRaisedIssues
 );
 
 // Get single issue
 router.get(
   "/:issueId",
-  auth(UserRole.admin, UserRole.staff, UserRole.user),
+  auth(UserRole.admin, UserRole.staff, UserRole.user, UserRole.client),
   IssueController.getSingleIssue
 );
 

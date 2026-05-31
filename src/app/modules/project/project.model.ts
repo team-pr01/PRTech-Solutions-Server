@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Schema, model } from "mongoose";
-import { TProject, TInstallment, TPhase, TExpenditure, TContactPerson } from "./project.interface";
+import { TProject, TInstallment, TPhase, TExpenditure } from "./project.interface";
 
 // Installment Schema
 const InstallmentSchema = new Schema<TInstallment>(
@@ -53,17 +53,6 @@ const ExpenditureSchema = new Schema<TExpenditure>(
   { _id: true }
 );
 
-// Contact Person Schema
-const ContactPersonSchema = new Schema<TContactPerson>(
-  {
-    name: { type: String, required: true, trim: true },
-    countryCode: { type: String, required: true, trim: true },
-    phoneNumber: { type: String, required: true, trim: true },
-    isPrimary: { type: Boolean, default: false },
-  },
-  { _id: true }
-);
-
 // Main Project Schema
 const ProjectSchema = new Schema<TProject>(
   {
@@ -95,7 +84,6 @@ const ProjectSchema = new Schema<TProject>(
     onGoingPhase: { type: String, trim: true },
     timelineLink: { type: String, trim: true },
     expenditures: [ExpenditureSchema],
-    contactPerson: [ContactPersonSchema],
     notes: { type: String, trim: true },
     projectLinks: [{ type: String, trim: true }],
     clientId: { type: Schema.Types.ObjectId, required: true, ref: "Client", index: true },
@@ -112,15 +100,13 @@ ProjectSchema.index({ startDate: 1, endDate: 1 });
 
 // Pre-save middleware to calculate project pending amount from phases
 ProjectSchema.pre("save", function (next) {
-  // Calculate total pending amount from all phases
   if (this.phases && this.phases.length > 0) {
-    const totalPhasePending = this.phases.reduce((sum, phase) => sum + (phase.pendingAmount || 0), 0);
-    this.pendingAmount = totalPhasePending;
-  }
-
-  // If pendingAmount is not set from phases, use the provided value
-  if (!this.pendingAmount && this.price) {
-    this.pendingAmount = this.price;
+    this.pendingAmount = this.phases.reduce(
+      (sum, phase) => sum + (phase.pendingAmount || 0),
+      0
+    );
+  } else {
+    this.pendingAmount = this.price || 0;
   }
 
   next();

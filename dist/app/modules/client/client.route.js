@@ -11,9 +11,12 @@ const auth_constants_1 = require("../auth/auth.constants");
 const router = express_1.default.Router();
 router.post("/add", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), client_controller_1.ClientControllers.addClient);
 router.get("/", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), client_controller_1.ClientControllers.getAllClients);
+router.get("/subordinates/:clientId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), client_controller_1.ClientControllers.getSubordinatesByClientId);
 router.get("/:clientId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), client_controller_1.ClientControllers.getSingleClient);
 router.put("/update/:clientId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), client_controller_1.ClientControllers.updateClient);
 router.delete("/delete/:clientId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), client_controller_1.ClientControllers.deleteClient);
+// Add gift to client
+router.post("/gifts/add/:clientId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), client_controller_1.ClientControllers.addGift);
 // Subordinate Routes
 router.post("/:clientId/subordinate/add", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), client_controller_1.ClientControllers.addSubordinate);
 router.put("/:clientId/subordinate/update/:subordinateId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), client_controller_1.ClientControllers.updateSubordinate);

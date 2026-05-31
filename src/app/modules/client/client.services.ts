@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
-import { TClient, TSubordinate } from "./client.interface";
+import { TClient, TGift, TSubordinate } from "./client.interface";
 import Client from "./client.model";
 import { generateUniqueClientId } from "../../utils/generateUniqueClientId";
 import { infinitePaginate } from "../../utils/infinitePaginate";
+import { AuthServices } from "../auth/auth.service";
+import Accounts from "../accounts/accounts.model";
 
 
 // Add client
-const addClient = async (payload: TClient) => {
+const addClient = async (payload: any) => {
   const { name, emails, phoneNumbers, country, source } = payload;
 
   // Check if client with same email already exists
@@ -30,6 +32,7 @@ const addClient = async (payload: TClient) => {
     emails,
     phoneNumbers,
     country,
+    countryCode: phoneNumbers[0].countryCode,
     source,
     socialMedia: payload.socialMedia,
     preferredContactMethod: payload.preferredContactMethod,
@@ -43,6 +46,17 @@ const addClient = async (payload: TClient) => {
   };
 
   const result = await Client.create(payloadData);
+
+  const signupPayload = {
+    name,
+    email: emails[0].email,
+    countryCode: phoneNumbers[0].countryCode,
+    phoneNumber: phoneNumbers[0].phoneNumber,
+    role: "client" as any,
+    password: payload.password as string,
+  }
+
+  await AuthServices.signup(signupPayload)
   return result;
 };
 
@@ -230,6 +244,50 @@ const deleteClient = async (clientId: string) => {
   return result;
 };
 
+// Get subordinates by client ID
+const getSubordinatesByClientId = async (clientId: string) => {
+  const client = await Client.findById(clientId);
+  if (!client) {
+    throw new AppError(httpStatus.NOT_FOUND, "Client not found");
+  }
+
+  return client.subordinates || [];
+};
+
+// Add gift to client
+const addGift = async (clientId: string, payload: TGift) => {
+  const client = await Client.findById(clientId);
+  if (!client) {
+    throw new AppError(httpStatus.NOT_FOUND, "Client not found");
+  }
+
+  // Initialize gifts array if it doesn't exist
+  if (!client.gifts) {
+    client.gifts = [];
+  }
+
+  // Add the new gift
+  client.gifts.push(payload);
+  await client.save();
+
+  // Return the newly added gift
+  const addedGift = client.gifts[client.gifts.length - 1];
+
+  await Accounts.create({
+    type: "expense",
+    expenseType: "client",
+    currency: payload.currency,
+    description: `Gift Purpose (${client.name}) - ${payload.title}`,
+    totalAmount: payload.totalAmount,
+    pendingAmount: 0,
+    paidAmount: payload.totalAmount,
+    date: payload.sentDate,
+    paymentMethod: payload.paymentMethod
+  })
+  return addedGift;
+};
+
+
 export const ClientServices = {
   addClient,
   getAllClients,
@@ -240,4 +298,6 @@ export const ClientServices = {
   addSubordinate,
   updateSubordinate,
   deleteSubordinate,
+  getSubordinatesByClientId,
+  addGift,
 };

@@ -7,11 +7,12 @@ import { Model } from "mongoose";
 import { UserRole } from "./auth.constants";
 
 export type TUser = {
-  userId: string;
+  userId?: string;
   _id: string;
   avatar?: string;
   name: string;
   email: string;
+  countryCode: string;
   phoneNumber: string;
   gender?: string;
   pinCode?: string;
@@ -19,7 +20,7 @@ export type TUser = {
   city?: string;
   address?: string;
   password: string;
-  role: "user" | "admin" | "staff";
+  role: "user" | "admin" | "staff" | "client";
   isDeleted?: boolean;
   isSuspended?: boolean;
   createdAt: Date;
