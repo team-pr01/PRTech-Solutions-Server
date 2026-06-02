@@ -10,13 +10,13 @@ const auth_1 = __importDefault(require("../../middlewares/auth"));
 const auth_constants_1 = require("../auth/auth.constants");
 const router = express_1.default.Router();
 // Add niche (admin only)
-router.post("/add", (0, auth_1.default)(auth_constants_1.UserRole.admin), niche_controller_1.NicheController.addNiche);
+router.post("/add", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), niche_controller_1.NicheController.addNiche);
 // Get all niches
-router.get("/", (0, auth_1.default)(auth_constants_1.UserRole.admin), niche_controller_1.NicheController.getAllNiches);
+router.get("/", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), niche_controller_1.NicheController.getAllNiches);
 // Get a single niche by ID
-router.get("/:nicheId", (0, auth_1.default)(auth_constants_1.UserRole.admin), niche_controller_1.NicheController.getSingleNicheById);
+router.get("/:nicheId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), niche_controller_1.NicheController.getSingleNicheById);
 // Update niche by ID (admin only)
-router.put("/update/:nicheId", (0, auth_1.default)(auth_constants_1.UserRole.admin), niche_controller_1.NicheController.updateNiche);
+router.put("/update/:nicheId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), niche_controller_1.NicheController.updateNiche);
 // Delete niche by ID (admin only)
-router.delete("/delete/:nicheId", (0, auth_1.default)(auth_constants_1.UserRole.admin), niche_controller_1.NicheController.deleteNiche);
+router.delete("/delete/:nicheId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), niche_controller_1.NicheController.deleteNiche);
 exports.NicheRoutes = router;
