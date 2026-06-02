@@ -231,7 +231,7 @@ const changeUserRole = (payload) => __awaiter(void 0, void 0, void 0, function* 
     return result;
 });
 const addStaff = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, email, phoneNumber, gender, country, city, address, password, pagesAssigned, jobRole, } = payload;
+    const { name, email, countryCode, phoneNumber, gender, country, city, address, password, pagesAssigned, jobRole, } = payload;
     const isUserExistsByEmail = yield auth_model_1.User.findOne({ email });
     if (isUserExistsByEmail) {
         throw new AppError_1.default(http_status_1.default.CONFLICT, "User already exists with this email");
@@ -243,6 +243,7 @@ const addStaff = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield auth_model_1.User.create({
         name,
         email,
+        countryCode,
         phoneNumber,
         gender,
         country,

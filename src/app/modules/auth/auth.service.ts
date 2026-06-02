@@ -319,6 +319,7 @@ const addStaff = async (payload: any) => {
   const {
     name,
     email,
+    countryCode,
     phoneNumber,
     gender,
     country,
@@ -348,6 +349,7 @@ const addStaff = async (payload: any) => {
   const user = await User.create({
     name,
     email,
+    countryCode,
     phoneNumber,
     gender,
     country,
