@@ -206,6 +206,19 @@ const addPhaseToExpenditure = catchAsync(async (req, res) => {
   });
 });
 
+// Get projects by client ID
+const getProjectsByClientId = catchAsync(async (req, res) => {
+  const { clientId } = req.params;
+  const result = await ProjectServices.getProjectsByClientId(clientId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Projects retrieved successfully",
+    data: result,
+  });
+});
+
 export const ProjectControllers = {
   addProject,
   getAllProjects,
@@ -220,5 +233,6 @@ export const ProjectControllers = {
   getSinglePhase,
   getAllPhases,
   addExpenditure,
-  addPhaseToExpenditure
+  addPhaseToExpenditure,
+  getProjectsByClientId
 };

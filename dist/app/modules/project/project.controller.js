@@ -176,6 +176,17 @@ const addPhaseToExpenditure = (0, catchAsync_1.default)((req, res) => __awaiter(
         data: result,
     });
 }));
+// Get projects by client ID
+const getProjectsByClientId = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { clientId } = req.params;
+    const result = yield project_services_1.ProjectServices.getProjectsByClientId(clientId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Projects retrieved successfully",
+        data: result,
+    });
+}));
 exports.ProjectControllers = {
     addProject,
     getAllProjects,
@@ -190,5 +201,6 @@ exports.ProjectControllers = {
     getSinglePhase,
     getAllPhases,
     addExpenditure,
-    addPhaseToExpenditure
+    addPhaseToExpenditure,
+    getProjectsByClientId
 };

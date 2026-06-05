@@ -101,4 +101,10 @@ router.delete(
   ProjectControllers.deletePhase
 );
 
+router.get(
+  "/client/:clientId",
+  auth(UserRole.admin, UserRole.staff, UserRole.client, UserRole.user),
+  ProjectControllers.getProjectsByClientId
+);
+
 export const ProjectRoutes = router;

@@ -32,4 +32,5 @@ router.post("/:projectId/expenditure/add", (0, auth_1.default)(auth_constants_1.
 // Add phase to expenditure
 router.post("/:projectId/expenditure/:expenditureId/phases/add", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), project_controller_1.ProjectControllers.addPhaseToExpenditure);
 router.delete("/phases/delete/:projectId/:phaseId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), project_controller_1.ProjectControllers.deletePhase);
+router.get("/client/:clientId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff, auth_constants_1.UserRole.client, auth_constants_1.UserRole.user), project_controller_1.ProjectControllers.getProjectsByClientId);
 exports.ProjectRoutes = router;

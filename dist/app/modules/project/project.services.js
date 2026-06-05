@@ -391,6 +391,11 @@ const addPhaseToExpenditure = (projectId, expenditureId, phaseData) => __awaiter
         expenditure: project.expenditures[expenditureIndex]
     };
 });
+// Get projects by client ID (select only name and _id)
+const getProjectsByClientId = (clientId) => __awaiter(void 0, void 0, void 0, function* () {
+    const projects = yield project_model_1.default.find({ clientId: clientId }, { name: 1, _id: 1 }).sort({ createdAt: -1 });
+    return projects;
+});
 exports.ProjectServices = {
     addProject,
     getAllProjects,
@@ -405,5 +410,6 @@ exports.ProjectServices = {
     getSinglePhase,
     getAllPhases,
     addExpenditure,
-    addPhaseToExpenditure
+    addPhaseToExpenditure,
+    getProjectsByClientId
 };

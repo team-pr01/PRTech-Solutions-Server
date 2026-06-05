@@ -2,6 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const IssueSchema = new mongoose_1.Schema({
+    project: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "Project",
+        required: true,
+        index: true,
+    },
     title: {
         type: String,
         required: true,

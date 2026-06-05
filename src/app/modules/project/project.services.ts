@@ -461,7 +461,7 @@ const getAllPhases = async (projectId: string) => {
 };
 
 const addExpenditure = async (projectId: string, payload: TExpenditure) => {
-  
+
   const project = await Project.findById(projectId);
   if (!project) {
     throw new AppError(httpStatus.NOT_FOUND, "Project not found");
@@ -479,10 +479,10 @@ const addExpenditure = async (projectId: string, payload: TExpenditure) => {
 
   // Add expenditure to project
   project.expenditures.push(payloadData);
-  
+
   // Mark expenditures as modified to save only this change
   project.markModified('expenditures');
-  
+
   // Save with validation turned off for other fields or use validateModifiedOnly
   await project.save({ validateModifiedOnly: true });
 
@@ -525,15 +525,15 @@ const addPhaseToExpenditure = async (
 
   // Recalculate expenditure totals from phases
   const expenditure = project.expenditures[expenditureIndex];
-const totalPaid = expenditure.phases.reduce(
-  (sum: number, phase: any) => sum + (phase.paidAmount || 0),
-  0
-);
+  const totalPaid = expenditure.phases.reduce(
+    (sum: number, phase: any) => sum + (phase.paidAmount || 0),
+    0
+  );
 
-expenditure.pendingAmount = Math.max(
-  0,
-  expenditure.totalAmount - totalPaid
-);
+  expenditure.pendingAmount = Math.max(
+    0,
+    expenditure.totalAmount - totalPaid
+  );
 
   // Mark as modified
   project.markModified('expenditures');
@@ -562,6 +562,16 @@ expenditure.pendingAmount = Math.max(
   };
 };
 
+// Get projects by client ID (select only name and _id)
+const getProjectsByClientId = async (clientId: string) => {
+  const projects = await Project.find(
+    { clientId: clientId },
+    { name: 1, _id: 1 }
+  ).sort({ createdAt: -1 });
+
+  return projects;
+};
+
 export const ProjectServices = {
   addProject,
   getAllProjects,
@@ -576,5 +586,6 @@ export const ProjectServices = {
   getSinglePhase,
   getAllPhases,
   addExpenditure,
-  addPhaseToExpenditure
+  addPhaseToExpenditure,
+  getProjectsByClientId
 };

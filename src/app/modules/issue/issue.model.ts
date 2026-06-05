@@ -3,6 +3,12 @@ import { TIssue } from "./issue.interface";
 
 const IssueSchema = new Schema<TIssue>(
   {
+    project: {
+      type: Schema.Types.ObjectId,
+      ref: "Project",
+      required: true,
+      index: true,
+    },
     title: {
       type: String,
       required: true,

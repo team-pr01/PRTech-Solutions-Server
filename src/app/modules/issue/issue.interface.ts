@@ -1,6 +1,7 @@
 import { ObjectId } from "mongoose";
 
 export type TIssue = {
+  project : ObjectId;
   title: string;
   description: string;
   status: "pending" | "ongoing" | "resolved" | "closed";
