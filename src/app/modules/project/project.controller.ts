@@ -209,7 +209,6 @@ const addPhaseToExpenditure = catchAsync(async (req, res) => {
 // Get projects by client ID
 const getProjectsByClientId = catchAsync(async (req, res) => {
   const userId = req.user._id;
-  console.log(userId);
   const result = await ProjectServices.getProjectsByClientId(userId);
 
   sendResponse(res, {

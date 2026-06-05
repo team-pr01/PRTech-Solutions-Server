@@ -39,6 +39,7 @@ const raiseIssue = (userId, payload, files) => __awaiter(void 0, void 0, void 0,
         status: "pending",
         images: imageUrls,
         raisedBy: userId,
+        project: payload.project,
     };
     const result = yield issue_model_1.default.create(issueData);
     return result;
@@ -65,6 +66,10 @@ const getAllIssues = (...args_1) => __awaiter(void 0, [...args_1], void 0, funct
     if (filters.raisedBy) {
         query.raisedBy = filters.raisedBy;
     }
+    // PROJECT FILTER
+    if (filters.projectId) {
+        query.projectId = filters.projectId;
+    }
     // DATE RANGE FILTER
     if (filters.dateFrom || filters.dateTo) {
         query.createdAt = {};
@@ -75,11 +80,34 @@ const getAllIssues = (...args_1) => __awaiter(void 0, [...args_1], void 0, funct
             query.createdAt.$lte = new Date(filters.dateTo);
         }
     }
-    return (0, infinitePaginate_1.infinitePaginate)(issue_model_1.default, query, skip, limit, ["raisedBy"]);
+    // Get paginated data with custom population
+    const result = yield (0, infinitePaginate_1.infinitePaginate)(issue_model_1.default, query, skip, limit, [] // Empty array to handle population manually
+    );
+    // Manually populate with specific fields
+    const populatedData = yield issue_model_1.default.populate(result.data, [
+        {
+            path: "project",
+            select: "name _id"
+        },
+        {
+            path: "raisedBy",
+            select: "name email _id"
+        }
+    ]);
+    return Object.assign(Object.assign({}, result), { data: populatedData });
 });
 // Get single issue by ID
 const getSingleIssue = (issueId) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield issue_model_1.default.findById(issueId).populate("raisedBy", "name email");
+    const result = yield issue_model_1.default.findById(issueId).populate([
+        {
+            path: "raisedBy",
+            select: "name email _id"
+        },
+        {
+            path: "project",
+            select: "name _id"
+        }
+    ]);
     if (!result) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Issue not found");
     }
@@ -116,7 +144,7 @@ const getMyRaisedIssues = (userId_1, ...args_1) => __awaiter(void 0, [userId_1, 
         }
     }
     // Get paginated data
-    const paginatedData = yield (0, infinitePaginate_1.infinitePaginate)(issue_model_1.default, query, skip, limit, ["raisedBy"]);
+    const paginatedData = yield (0, infinitePaginate_1.infinitePaginate)(issue_model_1.default, query, skip, limit, []);
     // Apply filters to stats (but keep them separate for different stats)
     // For total counts, we need different queries
     // Get total counts without status filter
@@ -136,9 +164,18 @@ const getMyRaisedIssues = (userId_1, ...args_1) => __awaiter(void 0, [userId_1, 
             }
         }
     ]);
-    console.log(totalStats);
+    const populatedData = yield issue_model_1.default.populate(paginatedData.data, [
+        {
+            path: "project",
+            select: "name _id"
+        },
+        {
+            path: "raisedBy",
+            select: "name email _id"
+        }
+    ]);
     return {
-        data: paginatedData.data,
+        data: populatedData,
         meta: paginatedData.meta,
         stats: {
             total: ((_a = totalStats[0]) === null || _a === void 0 ? void 0 : _a.total) || 0,
@@ -146,7 +183,8 @@ const getMyRaisedIssues = (userId_1, ...args_1) => __awaiter(void 0, [userId_1, 
             ongoing: ((_c = totalStats[0]) === null || _c === void 0 ? void 0 : _c.ongoing) || 0,
             answered: ((_d = totalStats[0]) === null || _d === void 0 ? void 0 : _d.answered) || 0,
             closed: ((_e = totalStats[0]) === null || _e === void 0 ? void 0 : _e.closed) || 0,
-        }
+        },
+        populatedData
     };
 });
 // Update issue status

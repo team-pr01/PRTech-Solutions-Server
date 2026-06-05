@@ -36,6 +36,7 @@ const raiseIssue = async (
         status: "pending",
         images: imageUrls,
         raisedBy: userId,
+        project: payload.project,
     };
 
     const result = await Issue.create(issueData);
@@ -73,6 +74,11 @@ const getAllIssues = async (
         query.raisedBy = filters.raisedBy;
     }
 
+    // PROJECT FILTER
+    if (filters.projectId) {
+        query.projectId = filters.projectId;
+    }
+
     // DATE RANGE FILTER
     if (filters.dateFrom || filters.dateTo) {
         query.createdAt = {};
@@ -84,18 +90,46 @@ const getAllIssues = async (
         }
     }
 
-    return infinitePaginate(
+    // Get paginated data with custom population
+    const result = await infinitePaginate(
         Issue,
         query,
         skip,
         limit,
-        ["raisedBy"]
+        [] // Empty array to handle population manually
     );
+
+    // Manually populate with specific fields
+    const populatedData = await Issue.populate(result.data, [
+        {
+            path: "project",
+            select: "name _id"
+        },
+        {
+            path: "raisedBy",
+            select: "name email _id"
+        }
+    ]);
+
+    return {
+        ...result,
+        data: populatedData
+    };
 };
 
 // Get single issue by ID
 const getSingleIssue = async (issueId: string) => {
-    const result = await Issue.findById(issueId).populate("raisedBy", "name email");
+    const result = await Issue.findById(issueId).populate([
+        {
+            path: "raisedBy",
+            select: "name email _id"
+        },
+        {
+            path: "project",
+            select: "name _id"
+        }
+    ]);
+
     if (!result) {
         throw new AppError(httpStatus.NOT_FOUND, "Issue not found");
     }
@@ -147,14 +181,14 @@ const getMyRaisedIssues = async (
         query,
         skip,
         limit,
-        ["raisedBy"]
+        []
     );
-    
+
     // Apply filters to stats (but keep them separate for different stats)
     // For total counts, we need different queries
-    
+
     // Get total counts without status filter
-      const totalStats = await Issue.aggregate([
+    const totalStats = await Issue.aggregate([
         { $match: { raisedBy: objectId } }, // Use ObjectId here
         {
             $group: {
@@ -171,10 +205,19 @@ const getMyRaisedIssues = async (
         }
     ]);
 
-    console.log(totalStats);
+    const populatedData = await Issue.populate(paginatedData.data, [
+        {
+            path: "project",
+            select: "name _id"
+        },
+        {
+            path: "raisedBy",
+            select: "name email _id"
+        }
+    ]);
 
     return {
-        data: paginatedData.data,
+        data: populatedData,
         meta: paginatedData.meta,
         stats: {
             total: totalStats[0]?.total || 0,
@@ -182,7 +225,8 @@ const getMyRaisedIssues = async (
             ongoing: totalStats[0]?.ongoing || 0,
             answered: totalStats[0]?.answered || 0,
             closed: totalStats[0]?.closed || 0,
-        }
+        },
+        populatedData
     };
 };
 
