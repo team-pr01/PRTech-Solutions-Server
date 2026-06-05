@@ -1,3 +1,5 @@
+import { ObjectId } from "mongoose";
+
 export type TSubordinate = {
   name: string;
   email?: string;
@@ -18,6 +20,7 @@ export type TGift = {
 }
 
 export type TClient = {
+  userId: ObjectId;
   // Personal Details
   clientId: string;
   name: string;

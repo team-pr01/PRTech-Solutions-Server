@@ -173,7 +173,7 @@ const forgetPassword = async (email: string) => {
     <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:10px; padding:32px; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
       
       <h2 style="color:#06a0ed; text-align:center; margin-bottom:20px;">
-        PRTEch Solutions
+        PRTech Solutions
       </h2>
 
       <p style="font-size:16px; color:#333;">
@@ -215,7 +215,7 @@ const forgetPassword = async (email: string) => {
       </p>
 
      <p style="font-size:16px; font-weight:bold; color:#06a0ed; text-align: center;">
-          The Sampoorna Fresh Team
+        PRTech Solutions
         </p>
 
     </div>

@@ -33,9 +33,19 @@ const addClient = (payload) => __awaiter(void 0, void 0, void 0, function* () {
             throw new AppError_1.default(http_status_1.default.CONFLICT, "Client with this email already exists");
         }
     }
+    const signupPayload = {
+        name,
+        email: emails[0].email,
+        countryCode: phoneNumbers[0].countryCode,
+        phoneNumber: phoneNumbers[0].phoneNumber,
+        role: "client",
+        password: payload.password,
+    };
+    const signupResponse = yield auth_service_1.AuthServices.signup(signupPayload);
     // Generate unique client ID
     const clientId = yield (0, generateUniqueClientId_1.generateUniqueClientId)();
     const payloadData = {
+        userId: signupResponse === null || signupResponse === void 0 ? void 0 : signupResponse._id,
         clientId,
         name,
         emails,
@@ -54,15 +64,6 @@ const addClient = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         subordinates: payload.subordinates || [],
     };
     const result = yield client_model_1.default.create(payloadData);
-    const signupPayload = {
-        name,
-        email: emails[0].email,
-        countryCode: phoneNumbers[0].countryCode,
-        phoneNumber: phoneNumbers[0].phoneNumber,
-        role: "client",
-        password: payload.password,
-    };
-    yield auth_service_1.AuthServices.signup(signupPayload);
     return result;
 });
 // Get all clients with filtering and pagination

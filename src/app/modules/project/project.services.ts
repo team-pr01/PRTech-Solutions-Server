@@ -563,9 +563,13 @@ const addPhaseToExpenditure = async (
 };
 
 // Get projects by client ID (select only name and _id)
-const getProjectsByClientId = async (clientId: string) => {
+const getProjectsByClientId = async (userId: string) => {
+  const client = await Client.findOne({ userId });
+  if (!client) {
+    throw new AppError(httpStatus.NOT_FOUND, "Client not found");
+  }
   const projects = await Project.find(
-    { clientId: clientId },
+    { clientId: client?._id },
     { name: 1, _id: 1 }
   ).sort({ createdAt: -1 });
 

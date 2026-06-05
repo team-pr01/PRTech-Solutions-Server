@@ -15,6 +15,7 @@ const SubordinateSchema = new mongoose_1.Schema({
 );
 // Main Client Schema
 const ClientSchema = new mongoose_1.Schema({
+    userId: { type: mongoose_1.Schema.Types.ObjectId, required: true, ref: "User", index: true },
     // Personal Details
     clientId: {
         type: String,

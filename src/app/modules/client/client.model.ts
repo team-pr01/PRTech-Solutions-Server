@@ -19,6 +19,7 @@ const SubordinateSchema = new Schema<TSubordinate>(
 // Main Client Schema
 const ClientSchema = new Schema<TClient>(
   {
+    userId: { type: Schema.Types.ObjectId, required: true, ref: "User", index: true },
     // Personal Details
     clientId: {
       type: String,

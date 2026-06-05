@@ -123,9 +123,9 @@ const addInstallment = catchAsync(async (req, res) => {
 const updateInstallment = catchAsync(async (req, res) => {
   const { projectId, phaseId, installmentId } = req.params;
   const result = await ProjectServices.updateInstallment(
-    projectId, 
-    phaseId, 
-    installmentId, 
+    projectId,
+    phaseId,
+    installmentId,
     req.body
   );
 
@@ -208,8 +208,9 @@ const addPhaseToExpenditure = catchAsync(async (req, res) => {
 
 // Get projects by client ID
 const getProjectsByClientId = catchAsync(async (req, res) => {
-  const { clientId } = req.params;
-  const result = await ProjectServices.getProjectsByClientId(clientId);
+  const userId = req.user._id;
+  console.log(userId);
+  const result = await ProjectServices.getProjectsByClientId(userId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

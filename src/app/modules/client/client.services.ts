@@ -23,10 +23,22 @@ const addClient = async (payload: any) => {
     }
   }
 
+  const signupPayload = {
+    name,
+    email: emails[0].email,
+    countryCode: phoneNumbers[0].countryCode,
+    phoneNumber: phoneNumbers[0].phoneNumber,
+    role: "client" as any,
+    password: payload.password as string,
+  }
+
+  const signupResponse = await AuthServices.signup(signupPayload)
+
   // Generate unique client ID
   const clientId = await generateUniqueClientId();
 
   const payloadData = {
+    userId: signupResponse?._id,
     clientId,
     name,
     emails,
@@ -47,16 +59,6 @@ const addClient = async (payload: any) => {
 
   const result = await Client.create(payloadData);
 
-  const signupPayload = {
-    name,
-    email: emails[0].email,
-    countryCode: phoneNumbers[0].countryCode,
-    phoneNumber: phoneNumbers[0].phoneNumber,
-    role: "client" as any,
-    password: payload.password as string,
-  }
-
-  await AuthServices.signup(signupPayload)
   return result;
 };
 

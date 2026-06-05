@@ -392,8 +392,12 @@ const addPhaseToExpenditure = (projectId, expenditureId, phaseData) => __awaiter
     };
 });
 // Get projects by client ID (select only name and _id)
-const getProjectsByClientId = (clientId) => __awaiter(void 0, void 0, void 0, function* () {
-    const projects = yield project_model_1.default.find({ clientId: clientId }, { name: 1, _id: 1 }).sort({ createdAt: -1 });
+const getProjectsByClientId = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const client = yield client_model_1.default.findOne({ userId });
+    if (!client) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Client not found");
+    }
+    const projects = yield project_model_1.default.find({ clientId: client === null || client === void 0 ? void 0 : client._id }, { name: 1, _id: 1 }).sort({ createdAt: -1 });
     return projects;
 });
 exports.ProjectServices = {

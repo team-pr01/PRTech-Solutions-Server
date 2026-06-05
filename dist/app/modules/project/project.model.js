@@ -70,7 +70,6 @@ const ProjectSchema = new mongoose_1.Schema({
     priceCurrency: {
         type: String,
         required: true,
-        default: "USD",
     },
     price: { type: Number, required: true, default: 0, min: 0 },
     pendingAmount: { type: Number, default: 0, min: 0 },

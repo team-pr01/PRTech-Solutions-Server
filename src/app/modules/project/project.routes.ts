@@ -102,7 +102,7 @@ router.delete(
 );
 
 router.get(
-  "/client/:clientId",
+  "/client/my-projects",
   auth(UserRole.admin, UserRole.staff, UserRole.client, UserRole.user),
   ProjectControllers.getProjectsByClientId
 );
