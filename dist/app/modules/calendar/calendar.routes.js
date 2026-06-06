@@ -16,7 +16,7 @@ router.get("/my", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_cons
 // Get single meeting
 router.get("/:meetingId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), calendar_controller_1.CalendarController.getSingleMeeting);
 // Update meeting
-router.put("/update/:meetingId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), calendar_controller_1.CalendarController.updateMeeting);
+router.put("/update-meeting/:meetingId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), calendar_controller_1.CalendarController.updateMeeting);
 // Update meeting status
 router.patch("/update-status/:meetingId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), calendar_controller_1.CalendarController.updateMeetingStatus);
 // Delete meeting

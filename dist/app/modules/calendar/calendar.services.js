@@ -76,11 +76,7 @@ const getMyCalendar = (userId_1, ...args_1) => __awaiter(void 0, [userId_1, ...a
     }
     // DATE FILTER (specific date)
     if (filters.date) {
-        const startDate = new Date(filters.date);
-        startDate.setHours(0, 0, 0, 0);
-        const endDate = new Date(filters.date);
-        endDate.setHours(23, 59, 59, 999);
-        query.date = { $gte: startDate, $lte: endDate };
+        query.date = new Date(filters.date);
     }
     // DATE RANGE FILTER
     if (filters.dateFrom || filters.dateTo) {

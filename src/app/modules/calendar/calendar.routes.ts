@@ -28,7 +28,7 @@ router.get(
 
 // Update meeting
 router.put(
-  "/update/:meetingId",
+  "/update-meeting/:meetingId",
   auth(UserRole.admin, UserRole.staff),
   CalendarController.updateMeeting
 );
