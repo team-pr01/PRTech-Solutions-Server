@@ -100,7 +100,7 @@ const LeadSchema = new Schema<TLead>(
     subNiche: {
       type: String,
       trim: true,
-      required: true,
+      required: false,
     },
 
     // Discovery Call

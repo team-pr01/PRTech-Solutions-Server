@@ -87,7 +87,7 @@ const LeadSchema = new mongoose_1.Schema({
     subNiche: {
         type: String,
         trim: true,
-        required: true,
+        required: false,
     },
     // Discovery Call
     discoveryCallScheduledDate: {
