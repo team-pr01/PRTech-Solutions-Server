@@ -33,7 +33,8 @@ const LeadSchema = new Schema<TLead>(
     businessContactNumber: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      unique: true
     },
     country: {
       type: String,
@@ -75,7 +76,9 @@ const LeadSchema = new Schema<TLead>(
     socialMedia: [SocialMediaSchema],
     website: {
       type: String,
-      trim: true
+      trim: true,
+      required: false,
+      unique: true
     },
 
     // Lead Details

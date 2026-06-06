@@ -24,7 +24,8 @@ const LeadSchema = new mongoose_1.Schema({
     businessContactNumber: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        unique: true
     },
     country: {
         type: String,
@@ -64,7 +65,9 @@ const LeadSchema = new mongoose_1.Schema({
     socialMedia: [SocialMediaSchema],
     website: {
         type: String,
-        trim: true
+        trim: true,
+        required: false,
+        unique: true
     },
     // Lead Details
     issueFound: {
