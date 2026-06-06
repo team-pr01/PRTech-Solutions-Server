@@ -37,13 +37,13 @@ const LeadSchema = new Schema<TLead>(
     },
     country: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
       index: true
     },
     city: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
       index: true
     },
