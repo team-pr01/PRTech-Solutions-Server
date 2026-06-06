@@ -11,6 +11,7 @@ import { StaffRoutes } from "../modules/staff/staff.route";
 import { NicheRoutes } from "../modules/niche/niche.routes";
 import { QueryRoutes } from "../modules/query/query.routes";
 import { IssueRoutes } from "../modules/issue/issue.routes";
+import { CalendarRoutes } from "../modules/calendar/calendar.routes";
 
 const router = Router();
 
@@ -62,6 +63,10 @@ const moduleRoutes = [
   {
     path: "/issue",
     route: IssueRoutes,
+  },
+  {
+    path: "/calendar",
+    route: CalendarRoutes,
   },
 ];
 
