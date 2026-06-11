@@ -14,6 +14,7 @@ export type TFollowUp = {
 };
 
 export type TLead = {
+  quickLink?: string;
   // Basic Information
   businessName: string;
   businessContactNumber: string;

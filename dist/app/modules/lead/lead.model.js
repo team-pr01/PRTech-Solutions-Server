@@ -14,6 +14,10 @@ const FollowUpSchema = new mongoose_1.Schema({
 }, { timestamps: true });
 // Main Lead Schema
 const LeadSchema = new mongoose_1.Schema({
+    quickLink: {
+        type: String,
+        trim: true
+    },
     // Basic Information
     businessName: {
         type: String,

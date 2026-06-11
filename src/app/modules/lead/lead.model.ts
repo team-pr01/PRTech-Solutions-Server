@@ -23,6 +23,10 @@ const FollowUpSchema = new Schema<TFollowUp>(
 // Main Lead Schema
 const LeadSchema = new Schema<TLead>(
   {
+    quickLink: {
+      type: String,
+      trim: true
+    },
     // Basic Information
     businessName: {
       type: String,
