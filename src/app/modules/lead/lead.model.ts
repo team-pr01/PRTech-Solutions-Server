@@ -36,7 +36,6 @@ const LeadSchema = new Schema<TLead>(
     businessContactNumber: {
       type: String,
       trim: true,
-      unique: true,
       sparse: true, // Allows multiple null values while maintaining uniqueness,
       default: undefined
     },
