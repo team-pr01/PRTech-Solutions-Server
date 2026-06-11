@@ -28,7 +28,8 @@ const LeadSchema = new mongoose_1.Schema({
         type: String,
         trim: true,
         unique: true,
-        sparse: true // Allows multiple null values while maintaining uniqueness
+        sparse: true, // Allows multiple null values while maintaining uniqueness,
+        default: undefined
     },
     country: {
         type: String,
