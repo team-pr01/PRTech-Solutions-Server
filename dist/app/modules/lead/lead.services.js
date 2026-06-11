@@ -27,14 +27,14 @@ const generateFollowUpKey = (followUpCount) => {
 };
 // Add Lead
 const addLead = (payload, userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const { businessName, businessContactNumber, } = payload;
-    // Check if lead with same business name and contact number exists
-    const existingLead = yield lead_model_1.default.findOne({
-        businessName,
-        businessContactNumber,
-    });
-    if (existingLead) {
-        throw new AppError_1.default(http_status_1.default.CONFLICT, "Lead with this business name and contact number already exists");
+    const { businessContactNumber } = payload;
+    if (businessContactNumber) {
+        const existingLead = yield lead_model_1.default.findOne({
+            businessContactNumber,
+        });
+        if (existingLead) {
+            throw new AppError_1.default(http_status_1.default.CONFLICT, "Lead with this business name and contact number already exists");
+        }
     }
     const payloadData = Object.assign(Object.assign({}, payload), { addedBy: userId });
     const result = yield lead_model_1.default.create(payloadData);

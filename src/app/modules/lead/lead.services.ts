@@ -15,24 +15,24 @@ const generateFollowUpKey = (followUpCount: number): string => {
 
 // Add Lead
 const addLead = async (payload: TLead, userId: string) => {
-  const {
-    businessName,
-    businessContactNumber,
-  } = payload;
+  const { businessContactNumber } = payload;
 
-  // Check if lead with same business name and contact number exists
-  const existingLead = await Lead.findOne({
-    businessName,
-    businessContactNumber,
-  });
+  if (businessContactNumber) {
+    const existingLead = await Lead.findOne({
+      businessContactNumber,
+    });
 
-  if (existingLead) {
-    throw new AppError(httpStatus.CONFLICT, "Lead with this business name and contact number already exists");
+    if (existingLead) {
+      throw new AppError(
+        httpStatus.CONFLICT,
+        "Lead with this business name and contact number already exists"
+      );
+    }
   }
 
   const payloadData = {
     ...payload,
-    addedBy: userId
+    addedBy: userId,
   };
 
   const result = await Lead.create(payloadData);
@@ -252,7 +252,7 @@ const getMyAddedLeads = async (
 
   // Get total count for this specific user with filters
   const total = await Lead.countDocuments(query);
-  
+
   // Get paginated data
   const leads = await Lead.find(query)
     .skip(skip)
