@@ -17,25 +17,22 @@ const LeadSchema = new mongoose_1.Schema({
     // Basic Information
     businessName: {
         type: String,
-        required: true,
         trim: true,
         index: true
     },
     businessContactNumber: {
         type: String,
-        required: true,
         trim: true,
-        unique: true
+        unique: true,
+        sparse: true // Allows multiple null values while maintaining uniqueness
     },
     country: {
         type: String,
-        required: false,
         trim: true,
         index: true
     },
     city: {
         type: String,
-        required: false,
         trim: true,
         index: true
     },
@@ -66,13 +63,12 @@ const LeadSchema = new mongoose_1.Schema({
     website: {
         type: String,
         trim: true,
-        required: false,
-        unique: true
+        unique: true,
+        sparse: true // Allows multiple null values while maintaining uniqueness
     },
     // Lead Details
     issueFound: {
         type: String,
-        required: true,
         trim: true
     },
     priority: {
@@ -83,14 +79,12 @@ const LeadSchema = new mongoose_1.Schema({
     },
     niche: {
         type: String,
-        required: true,
         trim: true,
         index: true
     },
     subNiche: {
         type: String,
         trim: true,
-        required: false,
     },
     // Discovery Call
     discoveryCallScheduledDate: {
@@ -111,7 +105,6 @@ const LeadSchema = new mongoose_1.Schema({
     status: {
         type: String,
         enum: ["Pending", "Ongoing", "Discovery Call Scheduled", "Closed", "Not Interested", "For Future"],
-        required: true,
         default: "Pending",
         index: true,
     },
@@ -121,8 +114,7 @@ const LeadSchema = new mongoose_1.Schema({
     },
     addedBy: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+        ref: "User"
     },
     // Additional Information
     leadSource: {
