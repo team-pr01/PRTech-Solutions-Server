@@ -21,7 +21,7 @@ const IssueSchema = new mongoose_1.Schema({
     },
     status: {
         type: String,
-        enum: ["pending", "ongoing", "resolved", "closed"],
+        enum: ["pending", "ongoing", "resolved", "closed", "needToDiscuss", "cancelled"],
         default: "pending",
         index: true,
     },

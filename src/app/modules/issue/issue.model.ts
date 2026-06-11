@@ -22,7 +22,7 @@ const IssueSchema = new Schema<TIssue>(
     },
     status: {
       type: String,
-      enum: ["pending", "ongoing", "resolved", "closed"],
+      enum: ["pending", "ongoing", "resolved", "closed", "needToDiscuss", "cancelled"],
       default: "pending",
       index: true,
     },
