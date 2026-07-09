@@ -12,6 +12,7 @@ import { NicheRoutes } from "../modules/niche/niche.routes";
 import { QueryRoutes } from "../modules/query/query.routes";
 import { IssueRoutes } from "../modules/issue/issue.routes";
 import { CalendarRoutes } from "../modules/calendar/calendar.routes";
+import { BlogRoutes } from "../modules/blog/blog.route";
 
 const router = Router();
 
@@ -67,6 +68,10 @@ const moduleRoutes = [
   {
     path: "/calendar",
     route: CalendarRoutes,
+  },
+  {
+    path: "/blog",
+    route: BlogRoutes,
   },
 ];
 
