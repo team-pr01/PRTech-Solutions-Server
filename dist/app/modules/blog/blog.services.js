@@ -121,6 +121,21 @@ const deleteBlog = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield blog_model_1.default.findByIdAndDelete(id);
     return result;
 });
+const markAsFeatured = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const blog = yield blog_model_1.default.findById(id);
+    if (!blog) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Blog not found");
+    }
+    // Toggle featured status
+    const newFeaturedStatus = !blog.isFeatured;
+    // If marking as featured, remove featured status from other blogs (optional)
+    if (newFeaturedStatus) {
+        // Remove featured status from all other blogs (if you want only one featured blog)
+        yield blog_model_1.default.updateMany({ _id: { $ne: id } }, { isFeatured: false });
+    }
+    const result = yield blog_model_1.default.findByIdAndUpdate(id, { isFeatured: newFeaturedStatus }, { new: true, runValidators: true });
+    return result;
+});
 exports.BlogServices = {
     addBlog,
     getAllBlogs,
@@ -128,4 +143,5 @@ exports.BlogServices = {
     getSingleBlogBySlug,
     updateBlog,
     deleteBlog,
+    markAsFeatured
 };

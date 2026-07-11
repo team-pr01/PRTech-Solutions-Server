@@ -164,6 +164,34 @@ const deleteBlog = async (id: string) => {
   return result;
 };
 
+const markAsFeatured = async (id: string) => {
+  const blog = await Blog.findById(id);
+
+  if (!blog) {
+    throw new AppError(httpStatus.NOT_FOUND, "Blog not found");
+  }
+
+  // Toggle featured status
+  const newFeaturedStatus = !blog.isFeatured;
+
+  // If marking as featured, remove featured status from other blogs (optional)
+  if (newFeaturedStatus) {
+    // Remove featured status from all other blogs (if you want only one featured blog)
+    await Blog.updateMany(
+      { _id: { $ne: id } },
+      { isFeatured: false }
+    );
+  }
+
+  const result = await Blog.findByIdAndUpdate(
+    id,
+    { isFeatured: newFeaturedStatus },
+    { new: true, runValidators: true }
+  );
+
+  return result;
+};
+
 export const BlogServices = {
   addBlog,
   getAllBlogs,
@@ -171,4 +199,5 @@ export const BlogServices = {
   getSingleBlogBySlug,
   updateBlog,
   deleteBlog,
+  markAsFeatured
 };

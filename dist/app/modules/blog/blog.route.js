@@ -21,4 +21,5 @@ router.get("/slug/:slug", blog_controller_1.BlogControllers.getSingleBlogBySlug)
 router.put("/update/:blogId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), multer_config_1.multerUpload.single("file"), blog_controller_1.BlogControllers.updateBlog);
 // Delete Blog
 router.delete("/delete/:blogId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), blog_controller_1.BlogControllers.deleteBlog);
+router.patch("/mark-featured/:id", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.staff), blog_controller_1.BlogControllers.markAsFeatured);
 exports.BlogRoutes = router;

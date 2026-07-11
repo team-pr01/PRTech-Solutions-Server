@@ -5,6 +5,8 @@ export type TBlog = {
   overview: string;
   category: string;
   description: string;
+  isFeatured?: boolean;
+  timeToRead: string;
   createdAt?: Date;
   updatedAt?: Date;
 };

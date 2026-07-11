@@ -94,6 +94,19 @@ const deleteBlog = catchAsync(async (req, res) => {
   });
 });
 
+// Mark blog as featured
+const markAsFeatured = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await BlogServices.markAsFeatured(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: result?.isFeatured ? "Blog marked as featured" : "Blog unmarked as featured",
+    data: result,
+  });
+});
+
 export const BlogControllers = {
   addBlog,
   getAllBlogs,
@@ -101,4 +114,5 @@ export const BlogControllers = {
   getSingleBlogBySlug,
   updateBlog,
   deleteBlog,
+  markAsFeatured
 };

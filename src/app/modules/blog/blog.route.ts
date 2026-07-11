@@ -36,4 +36,10 @@ router.delete(
   BlogControllers.deleteBlog
 );
 
+router.patch(
+  "/mark-featured/:id",
+  auth(UserRole.admin, UserRole.staff),
+  BlogControllers.markAsFeatured
+);
+
 export const BlogRoutes = router;
