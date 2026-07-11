@@ -7,6 +7,7 @@ export type TBlog = {
   description: string;
   isFeatured?: boolean;
   timeToRead: string;
+  tags : string[];
   createdAt?: Date;
   updatedAt?: Date;
 };

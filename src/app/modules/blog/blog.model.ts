@@ -37,6 +37,10 @@ const BlogSchema = new Schema<TBlog>(
     timeToRead: {
       type: String,
       required: true,
+    },
+    tags: {
+      type: [String],
+      required: true
     }
   },
   {

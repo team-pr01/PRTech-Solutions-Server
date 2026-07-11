@@ -31,6 +31,11 @@ const addBlog = async (
   const payloadData = {
     ...payload,
     imageUrl,
+    tags: Array.isArray(payload.tags)
+      ? payload.tags
+      : payload.tags
+      ? JSON.parse(payload.tags)
+      : [],
   };
 
   const result = await Blog.create(payloadData);

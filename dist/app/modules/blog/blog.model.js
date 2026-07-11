@@ -39,6 +39,10 @@ const BlogSchema = new mongoose_1.Schema({
     timeToRead: {
         type: String,
         required: true,
+    },
+    tags: {
+        type: [String],
+        required: true
     }
 }, {
     timestamps: true,

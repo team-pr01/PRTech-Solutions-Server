@@ -32,7 +32,11 @@ const addBlog = (payload, file) => __awaiter(void 0, void 0, void 0, function* (
         const uploadedImage = yield (0, sendImageToCloudinary_1.sendImageToCloudinary)(file.originalname, file.path);
         imageUrl = uploadedImage.secure_url;
     }
-    const payloadData = Object.assign(Object.assign({}, payload), { imageUrl });
+    const payloadData = Object.assign(Object.assign({}, payload), { imageUrl, tags: Array.isArray(payload.tags)
+            ? payload.tags
+            : payload.tags
+                ? JSON.parse(payload.tags)
+                : [] });
     const result = yield blog_model_1.default.create(payloadData);
     return result;
 });
