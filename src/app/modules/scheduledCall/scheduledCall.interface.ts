@@ -4,7 +4,7 @@ export type TScheduledCall = {
   email: string;
   phoneNumber: string;
   message?: string;
-  status?: "pending" | "confirmed" | "completed" | "cancelled";
+  status?: "pending" | "contacted" | "confirmed" | "cancelled";
   scheduledDate?: Date;
   scheduledTime?: string;
   notes?: string;

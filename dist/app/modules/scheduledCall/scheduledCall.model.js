@@ -26,7 +26,7 @@ const ScheduledCallSchema = new mongoose_1.Schema({
     },
     status: {
         type: String,
-        enum: ["pending", "confirmed", "completed", "cancelled"],
+        enum: ["pending", "confirmed", "contacted", "cancelled"],
         default: "pending",
         index: true,
     },
