@@ -13,6 +13,7 @@ import { QueryRoutes } from "../modules/query/query.routes";
 import { IssueRoutes } from "../modules/issue/issue.routes";
 import { CalendarRoutes } from "../modules/calendar/calendar.routes";
 import { BlogRoutes } from "../modules/blog/blog.route";
+import { ScheduledCallRoutes } from "../modules/scheduledCall/scheduledCall.routes";
 
 const router = Router();
 
@@ -72,6 +73,10 @@ const moduleRoutes = [
   {
     path: "/blog",
     route: BlogRoutes,
+  },
+  {
+    path: "/scheduled-call",
+    route: ScheduledCallRoutes,
   },
 ];
 

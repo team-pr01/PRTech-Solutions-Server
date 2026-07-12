@@ -15,6 +15,7 @@ const query_routes_1 = require("../modules/query/query.routes");
 const issue_routes_1 = require("../modules/issue/issue.routes");
 const calendar_routes_1 = require("../modules/calendar/calendar.routes");
 const blog_route_1 = require("../modules/blog/blog.route");
+const scheduledCall_routes_1 = require("../modules/scheduledCall/scheduledCall.routes");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -72,6 +73,10 @@ const moduleRoutes = [
     {
         path: "/blog",
         route: blog_route_1.BlogRoutes,
+    },
+    {
+        path: "/scheduled-call",
+        route: scheduledCall_routes_1.ScheduledCallRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
