@@ -78,7 +78,6 @@ const LeadSchema = new Schema<TLead>(
     website: {
       type: String,
       trim: true,
-      unique: true,
       sparse: true // Allows multiple null values while maintaining uniqueness
     },
 

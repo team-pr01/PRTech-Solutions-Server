@@ -67,7 +67,6 @@ const LeadSchema = new mongoose_1.Schema({
     website: {
         type: String,
         trim: true,
-        unique: true,
         sparse: true // Allows multiple null values while maintaining uniqueness
     },
     // Lead Details
