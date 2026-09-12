@@ -7,7 +7,13 @@ import config from "../../config";
 
 // User Signup
 const signup = catchAsync(async (req, res) => {
-  const result = await AuthServices.signup(req.body);
+  const files = req.files as {
+    avatar?: Express.Multer.File[];
+    panCardFrontImage?: Express.Multer.File[];
+    panCardBackImage?: Express.Multer.File[];
+  };
+
+  const result = await AuthServices.signup(req.body, files);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

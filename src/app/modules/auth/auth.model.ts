@@ -37,7 +37,7 @@ const userSchema = new Schema<TUser, UserModel>(
     },
     countryCode: {
       type: String,
-      required: true,
+      default: "+91",
       trim: true,
     },
     phoneNumber: {
@@ -45,9 +45,10 @@ const userSchema = new Schema<TUser, UserModel>(
       required: true,
       trim: true,
     },
-    gender : { type: String, required: false },
+    whatsappNumber: { type: String },
+    gender: { type: String, required: false },
     pinCode: { type: String, required: false },
-    country : { type: String, required: false },
+    country: { type: String, required: false },
     city: { type: String, required: false },
     address: {
       type: String,
@@ -59,6 +60,19 @@ const userSchema = new Schema<TUser, UserModel>(
       required: true,
       select: false,
     },
+    pagesAssigned: {
+      type: [String],
+      default: [],
+    },
+    jobRole: { type: String },
+    bank: {
+      bankName: { type: String, required: true },
+      bankAccountNumber: { type: String, required: true },
+      ifscCode: { type: String, required: true },
+      bankPhoneNumber: { type: String },
+    },
+    panCardFrontImage: { type: String },
+    panCardBackImage: { type: String },
     role: {
       type: String,
       enum: ["user", "admin", "staff", "client"],

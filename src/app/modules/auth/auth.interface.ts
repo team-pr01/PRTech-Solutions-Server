@@ -19,6 +19,17 @@ export type TUser = {
   country?: string;
   city?: string;
   address?: string;
+  pagesAssigned: string[];
+  jobRole: string;
+  whatsappNumber?: string;
+  bank: {
+    bankName: string;
+    bankAccountNumber: string;
+    ifscCode: string;
+    bankPhoneNumber?: string;
+  },
+  panCardFrontImage?: string;
+  panCardBackImage?: string;
   password: string;
   role: "user" | "admin" | "staff" | "client";
   isDeleted?: boolean;

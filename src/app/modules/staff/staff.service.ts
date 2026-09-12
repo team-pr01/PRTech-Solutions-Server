@@ -6,6 +6,7 @@ import { TStaff } from "./staff.interface";
 import { Staff } from "./staff.model";
 import mongoose from "mongoose";
 
+
 const getAllStaffs = async (page = 1, limit = 10, search = "") => {
   const skip = (page - 1) * limit;
 

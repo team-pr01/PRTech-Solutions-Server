@@ -23,14 +23,51 @@ const auth_model_1 = require("./auth.model");
 const sendEmail_1 = require("../../utils/sendEmail");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const staff_model_1 = require("../staff/staff.model");
-const signup = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const sendImageToCloudinary_1 = require("../../utils/sendImageToCloudinary");
+const signup = (payload, files) => __awaiter(void 0, void 0, void 0, function* () {
     // Check if user exists
     const isUserExists = yield auth_model_1.User.findOne({ email: payload.email });
     if (isUserExists) {
         throw new AppError_1.default(http_status_1.default.CONFLICT, "User already exists.");
     }
-    ;
-    const result = yield auth_model_1.User.create(payload);
+    let avatarUrl;
+    let panCardFrontUrl;
+    let panCardBackUrl;
+    // Avatar
+    if ((files === null || files === void 0 ? void 0 : files.avatar) && files.avatar[0]) {
+        const imageName = `${payload.name}-${Date.now()}`;
+        const { secure_url } = yield (0, sendImageToCloudinary_1.sendImageToCloudinary)(imageName, files.avatar[0].path);
+        avatarUrl = secure_url;
+    }
+    // PAN Card Front
+    if ((files === null || files === void 0 ? void 0 : files.panCardFrontImage) && files.panCardFrontImage[0]) {
+        const imageName = `pan-front-${payload.name}-${Date.now()}`;
+        const { secure_url } = yield (0, sendImageToCloudinary_1.sendImageToCloudinary)(imageName, files.panCardFrontImage[0].path);
+        panCardFrontUrl = secure_url;
+    }
+    // PAN Card Back
+    if ((files === null || files === void 0 ? void 0 : files.panCardBackImage) && files.panCardBackImage[0]) {
+        const imageName = `pan-back-${payload.name}-${Date.now()}`;
+        const { secure_url } = yield (0, sendImageToCloudinary_1.sendImageToCloudinary)(imageName, files.panCardBackImage[0].path);
+        panCardBackUrl = secure_url;
+    }
+    const payloadData = Object.assign(Object.assign(Object.assign(Object.assign({}, payload), (avatarUrl && { avatar: avatarUrl })), (panCardFrontUrl && { panCardFrontImage: panCardFrontUrl })), (panCardBackUrl && { panCardBackImage: panCardBackUrl }));
+    // Bank details
+    if (payload.bankName ||
+        payload.bankAccountNumber ||
+        payload.ifscCode) {
+        payloadData.bank = {
+            bankName: payload.bankName,
+            bankAccountNumber: payload.bankAccountNumber,
+            ifscCode: payload.ifscCode,
+            bankPhoneNumber: payload.bankPhoneNumber,
+        };
+        delete payloadData.bankName;
+        delete payloadData.bankAccountNumber;
+        delete payloadData.ifscCode;
+        delete payloadData.bankPhoneNumber;
+    }
+    const result = yield auth_model_1.User.create(payloadData);
     return result;
 });
 // Login

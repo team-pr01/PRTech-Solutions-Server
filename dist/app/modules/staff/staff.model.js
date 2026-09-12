@@ -9,5 +9,14 @@ const StaffSchema = new mongoose_1.Schema({
         default: [],
     },
     jobRole: { type: String, required: true },
+    whatsappNumber: { type: String },
+    bank: {
+        bankName: { type: String, required: true },
+        bankAccountNumber: { type: String, required: true },
+        ifscCode: { type: String, required: true },
+        bankPhoneNumber: { type: String },
+    },
+    panCardFrontImage: { type: String },
+    panCardBackImage: { type: String },
 }, { timestamps: true });
 exports.Staff = (0, mongoose_1.model)("Staff", StaffSchema);

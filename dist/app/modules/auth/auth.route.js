@@ -10,10 +10,15 @@ const auth_validation_1 = require("./auth.validation");
 const auth_controller_1 = require("./auth.controller");
 const auth_1 = __importDefault(require("../../middlewares/auth"));
 const auth_constants_1 = require("./auth.constants");
+const multer_config_1 = require("../../config/multer.config");
 // import { upload } from "../../utils/sendImageToCloudinary";
 const router = express_1.default.Router();
 router.post("/add-staff", (0, auth_1.default)(auth_constants_1.UserRole.admin), auth_controller_1.AuthControllers.addStaff);
-router.post("/signup", auth_controller_1.AuthControllers.signup);
+router.post("/signup", multer_config_1.multerUpload.fields([
+    { name: "avatar", maxCount: 1 },
+    { name: "panCardFrontImage", maxCount: 1 },
+    { name: "panCardBackImage", maxCount: 1 },
+]), auth_controller_1.AuthControllers.signup);
 router.post("/login", (0, validateRequest_1.default)(auth_validation_1.AuthValidations.LoginValidationSchema), auth_controller_1.AuthControllers.loginUser);
 router.post("/refresh-token", (0, validateRequest_1.default)(auth_validation_1.AuthValidations.refreshTokenValidationSchema), auth_controller_1.AuthControllers.refreshToken);
 router.post("/forgot-password", auth_controller_1.AuthControllers.forgetPassword);

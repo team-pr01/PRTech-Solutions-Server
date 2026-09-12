@@ -9,18 +9,83 @@ import { User } from "./auth.model";
 import { sendEmail } from "../../utils/sendEmail";
 import bcrypt from "bcrypt";
 import { Staff } from "../staff/staff.model";
+import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 
 const signup = async (
-  payload: Partial<TUser>,
+  payload: Partial<TUser> | any,
+  files?: {
+    avatar?: Express.Multer.File[];
+    panCardFrontImage?: Express.Multer.File[];
+    panCardBackImage?: Express.Multer.File[];
+  }
 ) => {
   // Check if user exists
   const isUserExists = await User.findOne({ email: payload.email });
   if (isUserExists) {
     throw new AppError(httpStatus.CONFLICT, "User already exists.");
+  }
+
+  let avatarUrl: string | undefined;
+  let panCardFrontUrl: string | undefined;
+  let panCardBackUrl: string | undefined;
+
+  // Avatar
+  if (files?.avatar && files.avatar[0]) {
+    const imageName = `${payload.name}-${Date.now()}`;
+    const { secure_url } = await sendImageToCloudinary(
+      imageName,
+      files.avatar[0].path
+    );
+    avatarUrl = secure_url;
+  }
+
+  // PAN Card Front
+  if (files?.panCardFrontImage && files.panCardFrontImage[0]) {
+    const imageName = `pan-front-${payload.name}-${Date.now()}`;
+    const { secure_url } = await sendImageToCloudinary(
+      imageName,
+      files.panCardFrontImage[0].path
+    );
+    panCardFrontUrl = secure_url;
+  }
+
+  // PAN Card Back
+  if (files?.panCardBackImage && files.panCardBackImage[0]) {
+    const imageName = `pan-back-${payload.name}-${Date.now()}`;
+    const { secure_url } = await sendImageToCloudinary(
+      imageName,
+      files.panCardBackImage[0].path
+    );
+    panCardBackUrl = secure_url;
+  }
+
+  const payloadData: Partial<TUser> = {
+    ...payload,
+    ...(avatarUrl && { avatar: avatarUrl }),
+    ...(panCardFrontUrl && { panCardFrontImage: panCardFrontUrl }),
+    ...(panCardBackUrl && { panCardBackImage: panCardBackUrl }),
   };
 
-  const result = await User.create(payload);
+  // Bank details
+  if (
+    payload.bankName ||
+    payload.bankAccountNumber ||
+    payload.ifscCode
+  ) {
+    payloadData.bank = {
+      bankName: payload.bankName as string,
+      bankAccountNumber: payload.bankAccountNumber as string,
+      ifscCode: payload.ifscCode as string,
+      bankPhoneNumber: payload.bankPhoneNumber as string,
+    };
 
+    delete (payloadData as any).bankName;
+    delete (payloadData as any).bankAccountNumber;
+    delete (payloadData as any).ifscCode;
+    delete (payloadData as any).bankPhoneNumber;
+  }
+
+  const result = await User.create(payloadData);
   return result;
 };
 
