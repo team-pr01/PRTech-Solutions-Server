@@ -10,14 +10,14 @@ const StaffSchema = new Schema<TStaff>(
     },
     jobRole : { type: String, required: true },
     whatsappNumber : { type: String },
-    bank : {
-      bankName: { type: String, required: true },
-      bankAccountNumber: { type: String, required: true },
-      ifscCode: { type: String, required: true },
-      bankPhoneNumber: { type: String },
-    },
-    panCardFrontImage : { type: String },
-    panCardBackImage : { type: String },
+    // bank : {
+    //   bankName: { type: String },
+    //   bankAccountNumber: { type: String },
+    //   ifscCode: { type: String },
+    //   bankPhoneNumber: { type: String },
+    // },
+    // panCardFrontImage : { type: String },
+    // panCardBackImage : { type: String },
   },
   { timestamps: true }
 );

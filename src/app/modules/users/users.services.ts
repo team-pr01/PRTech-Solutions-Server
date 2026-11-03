@@ -13,7 +13,6 @@ const getMe = async (userId: string) => {
   return result;
 };
 
-
 const updateProfile = async (id: string, payload: Partial<TUser>, profilePic: any) => {
   let profilePicUrl: string | undefined;
 

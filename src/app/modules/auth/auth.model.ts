@@ -66,9 +66,9 @@ const userSchema = new Schema<TUser, UserModel>(
     },
     jobRole: { type: String },
     bank: {
-      bankName: { type: String, required: true },
-      bankAccountNumber: { type: String, required: true },
-      ifscCode: { type: String, required: true },
+      bankName: { type: String },
+      bankAccountNumber: { type: String },
+      ifscCode: { type: String },
       bankPhoneNumber: { type: String },
     },
     panCardFrontImage: { type: String },

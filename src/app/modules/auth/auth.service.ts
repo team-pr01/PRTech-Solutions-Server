@@ -67,23 +67,23 @@ const signup = async (
   };
 
   // Bank details
-  if (
-    payload.bankName ||
-    payload.bankAccountNumber ||
-    payload.ifscCode
-  ) {
-    payloadData.bank = {
-      bankName: payload.bankName as string,
-      bankAccountNumber: payload.bankAccountNumber as string,
-      ifscCode: payload.ifscCode as string,
-      bankPhoneNumber: payload.bankPhoneNumber as string,
-    };
+  // if (
+  //   payload.bankName ||
+  //   payload.bankAccountNumber ||
+  //   payload.ifscCode
+  // ) {
+  //   payloadData.bank = {
+  //     bankName: payload.bankName as string,
+  //     bankAccountNumber: payload.bankAccountNumber as string,
+  //     ifscCode: payload.ifscCode as string,
+  //     bankPhoneNumber: payload.bankPhoneNumber as string,
+  //   };
 
-    delete (payloadData as any).bankName;
-    delete (payloadData as any).bankAccountNumber;
-    delete (payloadData as any).ifscCode;
-    delete (payloadData as any).bankPhoneNumber;
-  }
+  //   delete (payloadData as any).bankName;
+  //   delete (payloadData as any).bankAccountNumber;
+  //   delete (payloadData as any).ifscCode;
+  //   delete (payloadData as any).bankPhoneNumber;
+  // }
 
   const result = await User.create(payloadData);
   return result;

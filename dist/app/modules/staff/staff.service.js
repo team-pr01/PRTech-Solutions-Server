@@ -21,15 +21,14 @@ const staff_model_1 = require("./staff.model");
 const mongoose_1 = __importDefault(require("mongoose"));
 const getAllStaffs = (...args_1) => __awaiter(void 0, [...args_1], void 0, function* (page = 1, limit = 10, search = "") {
     const skip = (page - 1) * limit;
-    const filter = {};
+    const filter = { role: "staff" };
     if (search) {
         filter.$or = [
             { designation: { $regex: search, $options: "i" } },
             { workArea: { $regex: search, $options: "i" } },
         ];
     }
-    const staffs = yield staff_model_1.Staff.find(filter)
-        .populate("userId", "name email phoneNumber gender country city address")
+    const staffs = yield auth_model_1.User.find(filter)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
@@ -45,7 +44,7 @@ const getAllStaffs = (...args_1) => __awaiter(void 0, [...args_1], void 0, funct
     };
 });
 const getSingleStaff = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield staff_model_1.Staff.findById(id).populate("userId", "name email phoneNumber gender country city address");
+    return yield auth_model_1.User.findById(id);
 });
 const updateStaff = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     // Find staff first

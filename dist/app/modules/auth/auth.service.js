@@ -53,20 +53,22 @@ const signup = (payload, files) => __awaiter(void 0, void 0, void 0, function* (
     }
     const payloadData = Object.assign(Object.assign(Object.assign(Object.assign({}, payload), (avatarUrl && { avatar: avatarUrl })), (panCardFrontUrl && { panCardFrontImage: panCardFrontUrl })), (panCardBackUrl && { panCardBackImage: panCardBackUrl }));
     // Bank details
-    if (payload.bankName ||
-        payload.bankAccountNumber ||
-        payload.ifscCode) {
-        payloadData.bank = {
-            bankName: payload.bankName,
-            bankAccountNumber: payload.bankAccountNumber,
-            ifscCode: payload.ifscCode,
-            bankPhoneNumber: payload.bankPhoneNumber,
-        };
-        delete payloadData.bankName;
-        delete payloadData.bankAccountNumber;
-        delete payloadData.ifscCode;
-        delete payloadData.bankPhoneNumber;
-    }
+    // if (
+    //   payload.bankName ||
+    //   payload.bankAccountNumber ||
+    //   payload.ifscCode
+    // ) {
+    //   payloadData.bank = {
+    //     bankName: payload.bankName as string,
+    //     bankAccountNumber: payload.bankAccountNumber as string,
+    //     ifscCode: payload.ifscCode as string,
+    //     bankPhoneNumber: payload.bankPhoneNumber as string,
+    //   };
+    //   delete (payloadData as any).bankName;
+    //   delete (payloadData as any).bankAccountNumber;
+    //   delete (payloadData as any).ifscCode;
+    //   delete (payloadData as any).bankPhoneNumber;
+    // }
     const result = yield auth_model_1.User.create(payloadData);
     return result;
 });

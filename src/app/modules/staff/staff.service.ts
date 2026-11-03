@@ -6,11 +6,10 @@ import { TStaff } from "./staff.interface";
 import { Staff } from "./staff.model";
 import mongoose from "mongoose";
 
-
 const getAllStaffs = async (page = 1, limit = 10, search = "") => {
   const skip = (page - 1) * limit;
 
-  const filter: any = {};
+  const filter: any = { role: "staff" };
 
   if (search) {
     filter.$or = [
@@ -19,8 +18,7 @@ const getAllStaffs = async (page = 1, limit = 10, search = "") => {
     ];
   }
 
-  const staffs = await Staff.find(filter)
-    .populate("userId", "name email phoneNumber gender country city address")
+  const staffs = await User.find(filter)
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit);
@@ -39,10 +37,7 @@ const getAllStaffs = async (page = 1, limit = 10, search = "") => {
 };
 
 const getSingleStaff = async (id: string) => {
-  return await Staff.findById(id).populate(
-    "userId",
-    "name email phoneNumber gender country city address"
-  );
+  return await User.findById(id);
 };
 
 const updateStaff = async (id: string, payload: Partial<TStaff>) => {
