@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const mongoose_1 = require("mongoose");
 // Social Media Sub-schema
 const SocialMediaSchema = new mongoose_1.Schema({
@@ -27,8 +28,7 @@ const LeadSchema = new mongoose_1.Schema({
     businessContactNumber: {
         type: String,
         trim: true,
-        sparse: true, // Allows multiple null values while maintaining uniqueness,
-        default: undefined
+        // Removed sparse: true and default: undefined
     },
     country: {
         type: String,
@@ -67,7 +67,7 @@ const LeadSchema = new mongoose_1.Schema({
     website: {
         type: String,
         trim: true,
-        sparse: true // Allows multiple null values while maintaining uniqueness
+        // Removed sparse: true
     },
     // Lead Details
     issueFound: {
@@ -131,11 +131,51 @@ const LeadSchema = new mongoose_1.Schema({
 }, {
     timestamps: true,
 });
-// Compound indexes for better query performance
+// ==========================================
+// MIDDLEWARES TO PREVENT EMPTY STRING ERRORS
+// ==========================================
+// 1. For standard .save()
+LeadSchema.pre("save", function (next) {
+    if (this.website === "" || this.website === null) {
+        this.website = undefined;
+    }
+    if (this.businessContactNumber === "" || this.businessContactNumber === null) {
+        this.set("businessContactNumber", undefined);
+    }
+    next();
+});
+// 2. For .findOneAndUpdate() (Used in your error stack trace)
+LeadSchema.pre("findOneAndUpdate", function (next) {
+    const update = this.getUpdate();
+    // Handle website
+    if (update.website === "" || update.website === null) {
+        delete update.website;
+        update.$unset = Object.assign(Object.assign({}, update.$unset), { website: 1 });
+    }
+    // Handle businessContactNumber
+    if (update.businessContactNumber === "" || update.businessContactNumber === null) {
+        delete update.businessContactNumber;
+        update.$unset = Object.assign(Object.assign({}, update.$unset), { businessContactNumber: 1 });
+    }
+    next();
+});
+// ==========================================
+// COMPOUND & UNIQUE INDEXES
+// ==========================================
 LeadSchema.index({ status: 1, priority: 1 });
 LeadSchema.index({ country: 1, city: 1 });
 LeadSchema.index({ discoveryCallScheduledDate: 1 });
 LeadSchema.index({ "followUps.followUpDate": 1 });
 LeadSchema.index({ businessName: "text", ownerName: "text" });
+// Replaced sparse: true with partialFilterExpression
+// This ensures the unique constraint ONLY applies if the field is a valid non-empty string
+LeadSchema.index({ website: 1 }, {
+    unique: true,
+    partialFilterExpression: { website: { $type: "string", $ne: "" } }
+});
+LeadSchema.index({ businessContactNumber: 1 }, {
+    unique: true,
+    partialFilterExpression: { businessContactNumber: { $type: "string", $ne: "" } }
+});
 const Lead = (0, mongoose_1.model)("Lead", LeadSchema);
 exports.default = Lead;

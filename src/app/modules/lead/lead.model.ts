@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Schema, model } from "mongoose";
 import { TFollowUp, TLead, TSocialMedia } from "./lead.interface";
 
@@ -36,8 +37,7 @@ const LeadSchema = new Schema<TLead>(
     businessContactNumber: {
       type: String,
       trim: true,
-      sparse: true, // Allows multiple null values while maintaining uniqueness,
-      default: undefined
+      // Removed sparse: true and default: undefined
     },
     country: {
       type: String,
@@ -78,7 +78,7 @@ const LeadSchema = new Schema<TLead>(
     website: {
       type: String,
       trim: true,
-      sparse: true // Allows multiple null values while maintaining uniqueness
+      // Removed sparse: true
     },
 
     // Lead Details
@@ -152,12 +152,66 @@ const LeadSchema = new Schema<TLead>(
   }
 );
 
-// Compound indexes for better query performance
+// ==========================================
+// MIDDLEWARES TO PREVENT EMPTY STRING ERRORS
+// ==========================================
+
+// 1. For standard .save()
+LeadSchema.pre("save", function (next) {
+  if (this.website === "" || this.website === null) {
+    this.website = undefined;
+  }
+  if (this.businessContactNumber === "" || this.businessContactNumber === null) {
+    this.set("businessContactNumber", undefined);
+  }
+  next();
+});
+
+// 2. For .findOneAndUpdate() (Used in your error stack trace)
+LeadSchema.pre("findOneAndUpdate", function (next) {
+  const update = this.getUpdate() as any;
+  
+  // Handle website
+  if (update.website === "" || update.website === null) {
+    delete update.website;
+    update.$unset = { ...update.$unset, website: 1 };
+  }
+  
+  // Handle businessContactNumber
+  if (update.businessContactNumber === "" || update.businessContactNumber === null) {
+    delete update.businessContactNumber;
+    update.$unset = { ...update.$unset, businessContactNumber: 1 };
+  }
+
+  next();
+});
+
+// ==========================================
+// COMPOUND & UNIQUE INDEXES
+// ==========================================
 LeadSchema.index({ status: 1, priority: 1 });
 LeadSchema.index({ country: 1, city: 1 });
 LeadSchema.index({ discoveryCallScheduledDate: 1 });
 LeadSchema.index({ "followUps.followUpDate": 1 });
 LeadSchema.index({ businessName: "text", ownerName: "text" });
+
+// Replaced sparse: true with partialFilterExpression
+// This ensures the unique constraint ONLY applies if the field is a valid non-empty string
+LeadSchema.index(
+  { website: 1 },
+  { 
+    unique: true, 
+    partialFilterExpression: { website: { $type: "string", $ne: "" } } 
+  }
+);
+
+LeadSchema.index(
+  { businessContactNumber: 1 },
+  { 
+    unique: true, 
+    partialFilterExpression: { businessContactNumber: { $type: "string", $ne: "" } } 
+  }
+);
 
 const Lead = model<TLead>("Lead", LeadSchema);
 export default Lead;
