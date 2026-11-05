@@ -36,7 +36,7 @@ const addLead = (payload, userId) => __awaiter(void 0, void 0, void 0, function*
             throw new AppError_1.default(http_status_1.default.CONFLICT, "Lead with this business name and contact number already exists");
         }
     }
-    const payloadData = Object.assign(Object.assign({}, payload), { addedBy: userId });
+    const payloadData = Object.assign(Object.assign({}, payload), { website: (payload === null || payload === void 0 ? void 0 : payload.website) || null, addedBy: userId });
     const result = yield lead_model_1.default.create(payloadData);
     return result;
 });

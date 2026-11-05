@@ -32,6 +32,7 @@ const addLead = async (payload: TLead, userId: string) => {
 
   const payloadData = {
     ...payload,
+    website: payload?.website || null,
     addedBy: userId,
   };
 
